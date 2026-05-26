@@ -8,6 +8,7 @@ import EnterprisePreview from "@/components/EnterprisePreview"
 import PartnerPreview from "@/components/PartnerPreview"
 import SNCNetwork from "@/components/SNCNetwork" 
 import Timeline from "@/components/Timeline"
+import CustomerStories from "@/components/CustomerStories"
 
 export default function Home() {
     return (
@@ -221,6 +222,7 @@ export default function Home() {
             <PartnerPreview /> 
             <SNCNetwork /> 
             <Timeline />
+            <CustomerStories />
         </main>
     )
 }
