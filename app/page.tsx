@@ -9,6 +9,7 @@ import PartnerPreview from "@/components/PartnerPreview"
 import SNCNetwork from "@/components/SNCNetwork" 
 import Timeline from "@/components/Timeline"
 import CustomerStories from "@/components/CustomerStories"
+import NewsAndFamily from "@/components/NewsAndFamily" 
 
 export default function Home() {
     return (
@@ -223,6 +224,7 @@ export default function Home() {
             <SNCNetwork /> 
             <Timeline />
             <CustomerStories />
+            <NewsAndFamily />
         </main>
     )
 }
