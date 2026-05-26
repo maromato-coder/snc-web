@@ -1,6 +1,7 @@
 "use client"
 
 import SNCRotatingCube from "@/components/SNCRotatingCube"
+import TrustBar from "@/components/TrustBar"
 
 export default function Home() {
     return (
@@ -206,6 +207,8 @@ export default function Home() {
                     </div>
                 ))}
             </div>
+            {/* ────────── TRUST BAR ────────── */}
+            <TrustBar />
         </main>
     )
 }
