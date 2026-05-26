@@ -10,6 +10,7 @@ import SNCNetwork from "@/components/SNCNetwork"
 import Timeline from "@/components/Timeline"
 import CustomerStories from "@/components/CustomerStories"
 import NewsAndFamily from "@/components/NewsAndFamily" 
+import FinalCTAFooter from "@/components/FinalCTAFooter" 
 
 export default function Home() {
     return (
@@ -225,6 +226,7 @@ export default function Home() {
             <Timeline />
             <CustomerStories />
             <NewsAndFamily />
+            <FinalCTAFooter /> 
         </main>
     )
 }
