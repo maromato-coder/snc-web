@@ -7,6 +7,7 @@ import BusinessPillars from "@/components/BusinessPillars"
 import EnterprisePreview from "@/components/EnterprisePreview"  
 import PartnerPreview from "@/components/PartnerPreview"
 import SNCNetwork from "@/components/SNCNetwork" 
+import Timeline from "@/components/Timeline"
 
 export default function Home() {
     return (
@@ -219,6 +220,7 @@ export default function Home() {
             <EnterprisePreview /> 
             <PartnerPreview /> 
             <SNCNetwork /> 
+            <Timeline />
         </main>
     )
 }
