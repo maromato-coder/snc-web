@@ -3,16 +3,26 @@
 import SNCRotatingCube from "@/components/SNCRotatingCube"
 import TrustBar from "@/components/TrustBar"
 import PersonaRouter from "@/components/PersonaRouter"
-import BusinessPillars from "@/components/BusinessPillars" 
-import EnterprisePreview from "@/components/EnterprisePreview"  
+import BusinessPillars from "@/components/BusinessPillars"
+import EnterprisePreview from "@/components/EnterprisePreview"
 import PartnerPreview from "@/components/PartnerPreview"
-import SNCNetwork from "@/components/SNCNetwork" 
+import SNCNetwork from "@/components/SNCNetwork"
 import Timeline from "@/components/Timeline"
 import CustomerStories from "@/components/CustomerStories"
-import NewsAndFamily from "@/components/NewsAndFamily" 
-import FinalCTAFooter from "@/components/FinalCTAFooter" 
+import NewsAndFamily from "@/components/NewsAndFamily"
+import FinalCTAFooter from "@/components/FinalCTAFooter"
+import * as React from "react"
 
 export default function Home() {
+    const [isMobile, setIsMobile] = React.useState(false)
+
+    React.useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+        checkMobile()
+        window.addEventListener("resize", checkMobile)
+        return () => window.removeEventListener("resize", checkMobile)
+    }, [])
+
     return (
         <main style={{ background: "#FFFFFF", minHeight: "100vh", color: "#0A1733" }}>
             {/* ────────── NAVIGATION ────────── */}
@@ -21,7 +31,7 @@ export default function Home() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "24px 80px",
+                    padding: isMobile ? "16px 20px" : "24px 80px",
                     borderBottom: "1px solid #F0F2F5",
                     background: "#FFFFFF",
                     position: "sticky",
@@ -32,8 +42,8 @@ export default function Home() {
                 <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                     <div
                         style={{
-                            width: 44,
-                            height: 44,
+                            width: isMobile ? 36 : 44,
+                            height: isMobile ? 36 : 44,
                             background: "#0066FF",
                             borderRadius: 10,
                             display: "flex",
@@ -41,7 +51,7 @@ export default function Home() {
                             justifyContent: "center",
                             color: "#FFFFFF",
                             fontWeight: 500,
-                            fontSize: 20,
+                            fontSize: isMobile ? 16 : 20,
                             fontFamily: "'Inter', sans-serif",
                             letterSpacing: 0.5,
                         }}
@@ -49,23 +59,27 @@ export default function Home() {
                         S
                     </div>
                     <div>
-                        <div style={{ fontSize: 22, fontWeight: 500, letterSpacing: 1.2, lineHeight: 1, color: "#0A1733" }}>SNC</div>
-                        <div style={{ fontSize: 13, color: "#8A95AD", marginTop: 4, lineHeight: 1 }}>에스엔씨</div>
+                        <div style={{ fontSize: isMobile ? 18 : 22, fontWeight: 500, letterSpacing: 1.2, lineHeight: 1, color: "#0A1733" }}>SNC</div>
+                        <div style={{ fontSize: isMobile ? 11 : 13, color: "#8A95AD", marginTop: 4, lineHeight: 1 }}>에스엔씨</div>
                     </div>
                 </div>
-                <ul style={{ display: "flex", gap: 40, listStyle: "none", margin: 0, padding: 0 }}>
-                    <li><a href="#" style={navLinkStyle}>Solutions</a></li>
-                    <li><a href="#" style={navLinkStyle}>Network</a></li>
-                    <li><a href="#" style={navLinkStyle}>Customers</a></li>
-                    <li><a href="#" style={navLinkStyle}>About</a></li>
-                </ul>
+
+                {!isMobile && (
+                    <ul style={{ display: "flex", gap: 40, listStyle: "none", margin: 0, padding: 0 }}>
+                        <li><a href="#" style={navLinkStyle}>Solutions</a></li>
+                        <li><a href="#" style={navLinkStyle}>Network</a></li>
+                        <li><a href="#" style={navLinkStyle}>Customers</a></li>
+                        <li><a href="#" style={navLinkStyle}>About</a></li>
+                    </ul>
+                )}
+
                 <button
                     style={{
                         background: "#0066FF",
                         color: "#FFFFFF",
-                        padding: "13px 28px",
+                        padding: isMobile ? "10px 18px" : "13px 28px",
                         borderRadius: 8,
-                        fontSize: 14,
+                        fontSize: isMobile ? 13 : 14,
                         border: "none",
                         fontWeight: 500,
                         fontFamily: "inherit",
@@ -80,9 +94,9 @@ export default function Home() {
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "1.15fr 1fr",
-                    gap: 80,
-                    padding: "120px 80px 100px",
+                    gridTemplateColumns: isMobile ? "1fr" : "1.15fr 1fr",
+                    gap: isMobile ? 40 : 80,
+                    padding: isMobile ? "60px 20px 40px" : "120px 80px 100px",
                     alignItems: "center",
                     background: "#F8FAFF",
                     maxWidth: 1440,
@@ -90,19 +104,18 @@ export default function Home() {
                 }}
             >
                 <div>
-                    {/* Eyebrow */}
                     <div
                         style={{
                             display: "inline-flex",
                             alignItems: "center",
                             gap: 10,
                             background: "#E6EEFF",
-                            padding: "8px 18px",
+                            padding: isMobile ? "6px 14px" : "8px 18px",
                             borderRadius: 100,
-                            fontSize: 13,
-                            letterSpacing: 1.8,
+                            fontSize: isMobile ? 11 : 13,
+                            letterSpacing: 1.5,
                             color: "#0046C0",
-                            marginBottom: 36,
+                            marginBottom: isMobile ? 24 : 36,
                             fontWeight: 500,
                             fontFamily: "'Inter', sans-serif",
                         }}
@@ -111,16 +124,14 @@ export default function Home() {
                         SINCE 2001 · KOREA IT SERVICE PLATFORM
                     </div>
 
-                    {/* Headline */}
                     <h1
                         style={{
-                            fontSize: 68,
+                            fontSize: isMobile ? 36 : 68,
                             lineHeight: 1.15,
                             fontWeight: 500,
-                            letterSpacing: -2,
-                            marginBottom: 28,
+                            letterSpacing: isMobile ? -1 : -2,
                             color: "#0A1733",
-                            margin: "0 0 28px 0",
+                            margin: isMobile ? "0 0 20px 0" : "0 0 28px 0",
                         }}
                     >
                         전국 IT 서비스를
@@ -128,23 +139,26 @@ export default function Home() {
                         <b style={{ color: "#0066FF", fontWeight: 500 }}>다시 연결합니다.</b>
                     </h1>
 
-                    {/* Subhead */}
-                    <p style={{ fontSize: 18, lineHeight: 1.7, color: "#5A6A8A", marginBottom: 44, margin: "0 0 44px 0" }}>
+                    <p style={{
+                        fontSize: isMobile ? 15 : 18,
+                        lineHeight: 1.7,
+                        color: "#5A6A8A",
+                        margin: isMobile ? "0 0 32px 0" : "0 0 44px 0"
+                    }}>
                         2001년부터 25년, SNC는 고객의 손을 놓지 않습니다.
                         <br />
                         누적 AS 11만 건 · 기업 311개사가 신뢰한 IT 서비스 파트너.
                     </p>
 
-                    {/* CTA Buttons */}
-                    <div style={{ display: "flex", gap: 14 }}>
+                    <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
                         <a
                             href="#"
                             style={{
                                 background: "#0066FF",
                                 color: "#FFFFFF",
-                                padding: "16px 28px",
+                                padding: isMobile ? "14px 22px" : "16px 28px",
                                 borderRadius: 10,
-                                fontSize: 15,
+                                fontSize: isMobile ? 14 : 15,
                                 textDecoration: "none",
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -159,9 +173,9 @@ export default function Home() {
                             style={{
                                 background: "#FFFFFF",
                                 color: "#0A1733",
-                                padding: "16px 28px",
+                                padding: isMobile ? "14px 22px" : "16px 28px",
                                 borderRadius: 10,
-                                fontSize: 15,
+                                fontSize: isMobile ? 14 : 15,
                                 textDecoration: "none",
                                 display: "inline-flex",
                                 alignItems: "center",
@@ -175,9 +189,16 @@ export default function Home() {
                     </div>
                 </div>
 
-                {/* ────────── RIGHT: 3D Cube ────────── */}
-                <div style={{ height: 520, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <SNCRotatingCube size={340} rotationDuration={20} />
+                <div style={{
+                    height: isMobile ? 320 : 520,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+                    <SNCRotatingCube
+                        size={isMobile ? 220 : 340}
+                        rotationDuration={20}
+                    />
                 </div>
             </div>
 
@@ -185,7 +206,7 @@ export default function Home() {
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
                     gap: 1,
                     background: "#E2E8F2",
                     borderTop: "1px solid #E2E8F2",
@@ -199,11 +220,14 @@ export default function Home() {
                     { num: "311", label: "기업 유지보수 계약" },
                     { num: "KOSA", label: "한국AI·SW협회 정회원", text: true },
                 ].map((s) => (
-                    <div key={s.label} style={{ background: "#FFFFFF", padding: "36px 32px" }}>
+                    <div key={s.label} style={{
+                        background: "#FFFFFF",
+                        padding: isMobile ? "24px 16px" : "36px 32px"
+                    }}>
                         <div
                             style={{
-                                fontSize: s.text ? 32 : 48,
-                                lineHeight: s.text ? "48px" : 1,
+                                fontSize: s.text ? (isMobile ? 22 : 32) : (isMobile ? 32 : 48),
+                                lineHeight: s.text ? (isMobile ? "32px" : "48px") : 1,
                                 fontWeight: 500,
                                 color: "#0066FF",
                                 letterSpacing: -1.5,
@@ -212,21 +236,27 @@ export default function Home() {
                         >
                             {s.num}
                         </div>
-                        <div style={{ fontSize: 13, color: "#5A6A8A", marginTop: 10, letterSpacing: 0.4 }}>{s.label}</div>
+                        <div style={{
+                            fontSize: isMobile ? 11 : 13,
+                            color: "#5A6A8A",
+                            marginTop: isMobile ? 6 : 10,
+                            letterSpacing: 0.4
+                        }}>{s.label}</div>
                     </div>
                 ))}
             </div>
-            {/* ────────── TRUST BAR ────────── */}
+
+            {/* ────────── 나머지 섹션들 ────────── */}
             <TrustBar />
-            <PersonaRouter /> 
-            <BusinessPillars /> 
-            <EnterprisePreview /> 
-            <PartnerPreview /> 
-            <SNCNetwork /> 
+            <PersonaRouter />
+            <BusinessPillars />
+            <EnterprisePreview />
+            <PartnerPreview />
+            <SNCNetwork />
             <Timeline />
             <CustomerStories />
             <NewsAndFamily />
-            <FinalCTAFooter /> 
+            <FinalCTAFooter />
         </main>
     )
 }

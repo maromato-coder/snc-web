@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import SNCNetworkMobile from "./SNCNetworkMobile"
 
 interface Node {
     id: string
@@ -70,10 +71,25 @@ const nodes: Node[] = [
 ]
 
 export default function SNCNetwork() {
+    // ── 모바일 감지 분기 ──
+    const [isMobile, setIsMobile] = React.useState(false)
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setMounted(true)
+        const check = () => setIsMobile(window.innerWidth <= 768)
+        check()
+        window.addEventListener("resize", check)
+        return () => window.removeEventListener("resize", check)
+    }, [])
+
+    // SSR 깜빡임 방지 — 마운트 전엔 데스크탑 기본
+    if (mounted && isMobile) return <SNCNetworkMobile />
+
+    // ── 이하 기존 데스크탑 코드 (변경 없음) ──
     return (
         <section style={{ background: "#F8FAFF", padding: "140px 80px" }}>
             <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-                {/* Heading */}
                 <div style={{ textAlign: "center", marginBottom: 80 }}>
                     <div
                         style={{
@@ -113,7 +129,6 @@ export default function SNCNetwork() {
                     </p>
                 </div>
 
-                {/* Diagram Container */}
                 <div
                     style={{
                         position: "relative",
@@ -122,7 +137,6 @@ export default function SNCNetwork() {
                         aspectRatio: "10 / 7",
                     }}
                 >
-                    {/* Connection Lines */}
                     <svg
                         viewBox="0 0 1000 700"
                         preserveAspectRatio="none"
@@ -140,7 +154,6 @@ export default function SNCNetwork() {
                                 <stop offset="100%" stopColor="#0066FF" stopOpacity="0.1" />
                             </linearGradient>
                         </defs>
-                        {/* NEXUS → 6 nodes */}
                         <line x1="500" y1="350" x2="500" y2="56" stroke="url(#lineGrad)" strokeWidth="1.5" strokeDasharray="5 5" />
                         <line x1="500" y1="350" x2="840" y2="210" stroke="url(#lineGrad)" strokeWidth="1.5" strokeDasharray="5 5" />
                         <line x1="500" y1="350" x2="840" y2="490" stroke="url(#lineGrad)" strokeWidth="1.5" strokeDasharray="5 5" />
@@ -149,25 +162,14 @@ export default function SNCNetwork() {
                         <line x1="500" y1="350" x2="160" y2="210" stroke="url(#lineGrad)" strokeWidth="1.5" strokeDasharray="5 5" />
                     </svg>
 
-                    {/* NEXUS Center Card */}
                     <NexusCard />
 
-                    {/* 6 Surrounding Nodes */}
                     {nodes.map((n) => (
                         <NodeCard key={n.id} node={n} />
                     ))}
                 </div>
 
-                {/* Legend */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: 40,
-                        marginTop: 60,
-                        flexWrap: "wrap",
-                    }}
-                >
+                <div style={{ display: "flex", justifyContent: "center", gap: 40, marginTop: 60, flexWrap: "wrap" }}>
                     <LegendItem color="#0066FF" label="본사 직속" />
                     <LegendItem color="#3385FF" label="전문 거점" hollow />
                     <LegendItem color="#B8C5E0" label="대리점 네트워크" hollow />
@@ -200,7 +202,6 @@ function NexusCard() {
                     overflow: "hidden",
                 }}
             >
-                {/* Decorative glow */}
                 <div
                     style={{
                         position: "absolute",
@@ -208,21 +209,11 @@ function NexusCard() {
                         right: -30,
                         width: 120,
                         height: 120,
-                        background:
-                            "radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)",
+                        background: "radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%)",
                         pointerEvents: "none",
                     }}
                 />
-
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 12,
-                        marginBottom: 10,
-                        position: "relative",
-                    }}
-                >
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10, position: "relative" }}>
                     <span
                         style={{
                             width: 12,
@@ -232,40 +223,15 @@ function NexusCard() {
                             boxShadow: "0 0 12px rgba(255, 255, 255, 0.8)",
                         }}
                     />
-                    <div
-                        style={{
-                            fontSize: 20,
-                            fontWeight: 500,
-                            letterSpacing: -0.3,
-                            fontFamily: "'Inter', sans-serif",
-                            lineHeight: 1,
-                        }}
-                    >
+                    <div style={{ fontSize: 20, fontWeight: 500, letterSpacing: -0.3, fontFamily: "'Inter', sans-serif", lineHeight: 1 }}>
                         SNC NEXUS
                     </div>
                 </div>
-
-                <div
-                    style={{
-                        fontSize: 13,
-                        color: "rgba(255, 255, 255, 0.75)",
-                        marginBottom: 12,
-                        position: "relative",
-                    }}
-                >
+                <div style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.75)", marginBottom: 12, position: "relative" }}>
                     본사 · 모든 연결의 중심
                 </div>
-
-                <div
-                    style={{
-                        fontSize: 12,
-                        color: "#FFFFFF",
-                        fontWeight: 500,
-                        fontStyle: "italic",
-                        position: "relative",
-                    }}
-                >
-                    “모든 연결의 중심입니다”
+                <div style={{ fontSize: 12, color: "#FFFFFF", fontWeight: 500, fontStyle: "italic", position: "relative" }}>
+                    "모든 연결의 중심입니다"
                 </div>
             </div>
         </div>
@@ -292,31 +258,16 @@ function NodeCard({ node }: { node: Node }) {
                 style={{
                     width: 200,
                     background: "#FFFFFF",
-                    border: `2px solid ${
-                        hover
-                            ? "#0066FF"
-                            : isTier3
-                            ? "#D6DCE8"
-                            : "#3385FF"
-                    }`,
+                    border: `2px solid ${hover ? "#0066FF" : isTier3 ? "#D6DCE8" : "#3385FF"}`,
                     borderRadius: 12,
                     padding: "16px 18px",
-                    boxShadow: hover
-                        ? "0 16px 32px rgba(0, 102, 255, 0.18)"
-                        : "0 4px 12px rgba(10, 23, 51, 0.06)",
+                    boxShadow: hover ? "0 16px 32px rgba(0, 102, 255, 0.18)" : "0 4px 12px rgba(10, 23, 51, 0.06)",
                     transform: hover ? "translateY(-6px)" : "translateY(0)",
                     transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                     cursor: "default",
                 }}
             >
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 8,
-                        marginBottom: 6,
-                    }}
-                >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                     <span
                         style={{
                             width: 8,
@@ -326,41 +277,15 @@ function NodeCard({ node }: { node: Node }) {
                             flexShrink: 0,
                         }}
                     />
-                    <div
-                        style={{
-                            fontSize: 14,
-                            fontWeight: 500,
-                            color: "#0A1733",
-                            fontFamily: "'Inter', sans-serif",
-                            letterSpacing: -0.2,
-                            lineHeight: 1.2,
-                        }}
-                    >
+                    <div style={{ fontSize: 14, fontWeight: 500, color: "#0A1733", fontFamily: "'Inter', sans-serif", letterSpacing: -0.2, lineHeight: 1.2 }}>
                         {node.name}
                     </div>
                 </div>
-
-                <div
-                    style={{
-                        fontSize: 11,
-                        color: "#5A6A8A",
-                        marginBottom: 8,
-                        lineHeight: 1.4,
-                    }}
-                >
+                <div style={{ fontSize: 11, color: "#5A6A8A", marginBottom: 8, lineHeight: 1.4 }}>
                     {node.nameKo} · {node.role}
                 </div>
-
-                <div
-                    style={{
-                        fontSize: 11,
-                        color: "#0046C0",
-                        fontWeight: 500,
-                        fontStyle: "italic",
-                        lineHeight: 1.4,
-                    }}
-                >
-                    “{node.slogan}”
+                <div style={{ fontSize: 11, color: "#0046C0", fontWeight: 500, fontStyle: "italic", lineHeight: 1.4 }}>
+                    "{node.slogan}"
                 </div>
             </div>
         </div>
