@@ -3,6 +3,8 @@
 import SNCRotatingCube from "@/components/SNCRotatingCube"
 import TrustBar from "@/components/TrustBar"
 import PersonaRouter from "@/components/PersonaRouter"
+import BusinessPillars from "@/components/BusinessPillars" 
+import EnterprisePreview from "@/components/EnterprisePreview"  
 
 export default function Home() {
     return (
@@ -211,6 +213,8 @@ export default function Home() {
             {/* ────────── TRUST BAR ────────── */}
             <TrustBar />
             <PersonaRouter /> 
+            <BusinessPillars /> 
+            <EnterprisePreview /> 
         </main>
     )
 }
