@@ -1,65 +1,217 @@
-import Image from "next/image";
+"use client"
+
+import SNCRotatingCube from "@/components/SNCRotatingCube"
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    return (
+        <main style={{ background: "#FFFFFF", minHeight: "100vh", color: "#0A1733" }}>
+            {/* ────────── NAVIGATION ────────── */}
+            <nav
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "24px 80px",
+                    borderBottom: "1px solid #F0F2F5",
+                    background: "#FFFFFF",
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 100,
+                }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+                <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <div
+                        style={{
+                            width: 44,
+                            height: 44,
+                            background: "#0066FF",
+                            borderRadius: 10,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#FFFFFF",
+                            fontWeight: 500,
+                            fontSize: 20,
+                            fontFamily: "'Inter', sans-serif",
+                            letterSpacing: 0.5,
+                        }}
+                    >
+                        S
+                    </div>
+                    <div>
+                        <div style={{ fontSize: 22, fontWeight: 500, letterSpacing: 1.2, lineHeight: 1, color: "#0A1733" }}>SNC</div>
+                        <div style={{ fontSize: 13, color: "#8A95AD", marginTop: 4, lineHeight: 1 }}>에스엔씨</div>
+                    </div>
+                </div>
+                <ul style={{ display: "flex", gap: 40, listStyle: "none", margin: 0, padding: 0 }}>
+                    <li><a href="#" style={navLinkStyle}>Solutions</a></li>
+                    <li><a href="#" style={navLinkStyle}>Network</a></li>
+                    <li><a href="#" style={navLinkStyle}>Customers</a></li>
+                    <li><a href="#" style={navLinkStyle}>About</a></li>
+                </ul>
+                <button
+                    style={{
+                        background: "#0066FF",
+                        color: "#FFFFFF",
+                        padding: "13px 28px",
+                        borderRadius: 8,
+                        fontSize: 14,
+                        border: "none",
+                        fontWeight: 500,
+                        fontFamily: "inherit",
+                        cursor: "pointer",
+                    }}
+                >
+                    상담 신청
+                </button>
+            </nav>
+
+            {/* ────────── HERO BODY ────────── */}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "1.15fr 1fr",
+                    gap: 80,
+                    padding: "120px 80px 100px",
+                    alignItems: "center",
+                    background: "#F8FAFF",
+                    maxWidth: 1440,
+                    margin: "0 auto",
+                }}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+                <div>
+                    {/* Eyebrow */}
+                    <div
+                        style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 10,
+                            background: "#E6EEFF",
+                            padding: "8px 18px",
+                            borderRadius: 100,
+                            fontSize: 13,
+                            letterSpacing: 1.8,
+                            color: "#0046C0",
+                            marginBottom: 36,
+                            fontWeight: 500,
+                            fontFamily: "'Inter', sans-serif",
+                        }}
+                    >
+                        <span style={{ width: 7, height: 7, background: "#0066FF", borderRadius: "50%", display: "inline-block" }} />
+                        SINCE 2001 · KOREA IT SERVICE PLATFORM
+                    </div>
+
+                    {/* Headline */}
+                    <h1
+                        style={{
+                            fontSize: 68,
+                            lineHeight: 1.15,
+                            fontWeight: 500,
+                            letterSpacing: -2,
+                            marginBottom: 28,
+                            color: "#0A1733",
+                            margin: "0 0 28px 0",
+                        }}
+                    >
+                        전국 IT 서비스를
+                        <br />
+                        <b style={{ color: "#0066FF", fontWeight: 500 }}>다시 연결합니다.</b>
+                    </h1>
+
+                    {/* Subhead */}
+                    <p style={{ fontSize: 18, lineHeight: 1.7, color: "#5A6A8A", marginBottom: 44, margin: "0 0 44px 0" }}>
+                        2001년부터 25년, SNC는 고객의 손을 놓지 않습니다.
+                        <br />
+                        누적 AS 11만 건 · 기업 311개사가 신뢰한 IT 서비스 파트너.
+                    </p>
+
+                    {/* CTA Buttons */}
+                    <div style={{ display: "flex", gap: 14 }}>
+                        <a
+                            href="#"
+                            style={{
+                                background: "#0066FF",
+                                color: "#FFFFFF",
+                                padding: "16px 28px",
+                                borderRadius: 10,
+                                fontSize: 15,
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 8,
+                                fontWeight: 500,
+                            }}
+                        >
+                            솔루션 알아보기 →
+                        </a>
+                        <a
+                            href="#"
+                            style={{
+                                background: "#FFFFFF",
+                                color: "#0A1733",
+                                padding: "16px 28px",
+                                borderRadius: 10,
+                                fontSize: 15,
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 8,
+                                fontWeight: 500,
+                                border: "1px solid #D6DCE8",
+                            }}
+                        >
+                            ▶ 2분 소개
+                        </a>
+                    </div>
+                </div>
+
+                {/* ────────── RIGHT: 3D Cube ────────── */}
+                <div style={{ height: 520, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <SNCRotatingCube size={340} rotationDuration={20} />
+                </div>
+            </div>
+
+            {/* ────────── STATS BAR ────────── */}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: 1,
+                    background: "#E2E8F2",
+                    borderTop: "1px solid #E2E8F2",
+                    maxWidth: 1440,
+                    margin: "0 auto",
+                }}
+            >
+                {[
+                    { num: "25+", label: "YEARS · SINCE 2001" },
+                    { num: "110K+", label: "누적 AS 처리" },
+                    { num: "311", label: "기업 유지보수 계약" },
+                    { num: "KOSA", label: "한국AI·SW협회 정회원", text: true },
+                ].map((s) => (
+                    <div key={s.label} style={{ background: "#FFFFFF", padding: "36px 32px" }}>
+                        <div
+                            style={{
+                                fontSize: s.text ? 32 : 48,
+                                lineHeight: s.text ? "48px" : 1,
+                                fontWeight: 500,
+                                color: "#0066FF",
+                                letterSpacing: -1.5,
+                                fontFamily: "'Inter', 'Pretendard Variable', sans-serif",
+                            }}
+                        >
+                            {s.num}
+                        </div>
+                        <div style={{ fontSize: 13, color: "#5A6A8A", marginTop: 10, letterSpacing: 0.4 }}>{s.label}</div>
+                    </div>
+                ))}
+            </div>
+        </main>
+    )
+}
+
+const navLinkStyle: React.CSSProperties = {
+    color: "#5A6A8A",
+    textDecoration: "none",
+    fontSize: 15,
 }
