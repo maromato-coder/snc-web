@@ -5,6 +5,8 @@ import TrustBar from "@/components/TrustBar"
 import PersonaRouter from "@/components/PersonaRouter"
 import BusinessPillars from "@/components/BusinessPillars" 
 import EnterprisePreview from "@/components/EnterprisePreview"  
+import PartnerPreview from "@/components/PartnerPreview"
+
 
 export default function Home() {
     return (
@@ -215,6 +217,7 @@ export default function Home() {
             <PersonaRouter /> 
             <BusinessPillars /> 
             <EnterprisePreview /> 
+            <PartnerPreview /> 
         </main>
     )
 }
