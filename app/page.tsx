@@ -2,6 +2,7 @@
 
 import SNCRotatingCube from "@/components/SNCRotatingCube"
 import TrustBar from "@/components/TrustBar"
+import PersonaRouter from "@/components/PersonaRouter"
 
 export default function Home() {
     return (
@@ -209,6 +210,7 @@ export default function Home() {
             </div>
             {/* ────────── TRUST BAR ────────── */}
             <TrustBar />
+            <PersonaRouter /> 
         </main>
     )
 }
