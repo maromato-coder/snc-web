@@ -89,7 +89,7 @@ export default function SNCNetwork() {
     // ── 이하 기존 데스크탑 코드 (변경 없음) ──
     return (
         <section style={{ background: "#F8FAFF", padding: "140px 80px" }}>
-            <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+            <div style={{ maxWidth: 1440, margin: "0 auto" }}>
                 <div style={{ textAlign: "center", marginBottom: 80 }}>
                     <div
                         style={{

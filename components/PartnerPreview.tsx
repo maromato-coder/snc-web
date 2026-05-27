@@ -33,7 +33,7 @@ export default function PartnerPreview() {
 
     return (
         <section style={{ background: "#FFFFFF", padding: "140px 80px" }}>
-            <div style={{ maxWidth: 1280, margin: "0 auto", display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 96, alignItems: "center" }}>
+            <div style={{ maxWidth: 1440, margin: "0 auto", display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 96, alignItems: "center" }}>
                 <div>
                     <div
                         style={{

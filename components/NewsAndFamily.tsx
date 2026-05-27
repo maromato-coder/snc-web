@@ -54,7 +54,7 @@ export default function NewsAndFamily() {
 
     return (
         <section style={{ background: "#FFFFFF", padding: m ? "72px 20px" : "140px 80px" }}>
-            <div style={{ maxWidth: m ? 480 : 1280, margin: "0 auto" }}>
+            <div style={{ maxWidth: m ? 480 : 1440, margin: "0 auto" }}>
                 <div
                     style={{
                         display: "grid",

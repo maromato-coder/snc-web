@@ -111,7 +111,7 @@ export default function FinalCTAFooter() {
 
             {/* ────────── FOOTER ────────── */}
             <footer style={{ background: "#FFFFFF", padding: m ? "48px 20px 28px" : "80px 80px 40px" }}>
-                <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+                <div style={{ maxWidth: 1440, margin: "0 auto" }}>
                     {/* Logo Row */}
                     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: m ? 32 : 56 }}>
                         <div
