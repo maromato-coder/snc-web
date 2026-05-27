@@ -82,8 +82,8 @@ export default function Home() {
                             onClick={() => setIsMenuOpen(true)}
                             aria-label="메뉴 열기"
                             style={{
-                                width: 40,
-                                height: 40,
+                                width: 44,
+                                height: 44,
                                 background: "transparent",
                                 border: "none",
                                 cursor: "pointer",
@@ -93,10 +93,10 @@ export default function Home() {
                                 padding: 0,
                             }}
                         >
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                                <line x1="4" y1="7" x2="20" y2="7" stroke="#0A1733" strokeWidth="2" strokeLinecap="round" />
-                                <line x1="4" y1="12" x2="20" y2="12" stroke="#0A1733" strokeWidth="2" strokeLinecap="round" />
-                                <line x1="4" y1="17" x2="20" y2="17" stroke="#0A1733" strokeWidth="2" strokeLinecap="round" />
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                                <line x1="4" y1="7" x2="20" y2="7" stroke="#0A1733" strokeWidth="2.2" strokeLinecap="round" />
+                                <line x1="4" y1="12" x2="20" y2="12" stroke="#0A1733" strokeWidth="2.2" strokeLinecap="round" />
+                                <line x1="4" y1="17" x2="20" y2="17" stroke="#0A1733" strokeWidth="2.2" strokeLinecap="round" />
                             </svg>
                         </button>
                     ) : (
