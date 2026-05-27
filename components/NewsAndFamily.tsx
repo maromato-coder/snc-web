@@ -18,69 +18,18 @@ interface FamilySite {
 }
 
 const newsItems: NewsItem[] = [
-    {
-        date: "2026.05.20",
-        category: "공지",
-        title: "2026 SNC NODE 가맹 설명회 일정 안내",
-        url: "#",
-    },
-    {
-        date: "2026.05.12",
-        category: "블로그",
-        title: "FIXER CHIEF 박○○님 인터뷰 — 25년 손기술이 만든 자부심",
-        url: "https://blog.naver.com/i_snc",
-    },
-    {
-        date: "2026.04.28",
-        category: "언론",
-        title: "SNC, KOSA AI 포럼 참가 — 컴퓨터 AS 플랫폼 비전 발표",
-        url: "#",
-    },
+    { date: "2026.05.20", category: "공지", title: "2026 SNC NODE 가맹 설명회 일정 안내", url: "#" },
+    { date: "2026.05.12", category: "블로그", title: "FIXER CHIEF 박○○님 인터뷰 — 25년 손기술이 만든 자부심", url: "https://blog.naver.com/i_snc" },
+    { date: "2026.04.28", category: "언론", title: "SNC, KOSA AI 포럼 참가 — 컴퓨터 AS 플랫폼 비전 발표", url: "#" },
 ]
 
 const familySites: FamilySite[] = [
-    {
-        name: "네이버 블로그",
-        desc: "현장 일상 · 노하우",
-        url: "https://blog.naver.com/i_snc",
-        icon: "blog",
-        color: "#03C75A",
-    },
-    {
-        name: "네이버 카페",
-        desc: "가맹점 커뮤니티",
-        url: "https://cafe.naver.com/sncpc",
-        icon: "cafe",
-        color: "#03C75A",
-    },
-    {
-        name: "YouTube",
-        desc: "IT · 교육 콘텐츠",
-        url: "#",
-        icon: "youtube",
-        color: "#FF0000",
-    },
-    {
-        name: "SNC 쇼핑몰",
-        desc: "i-snc.co.kr",
-        url: "https://i-snc.co.kr",
-        icon: "shop",
-        color: "#0066FF",
-    },
-    {
-        name: "Instagram",
-        desc: "@snccom",
-        url: "https://www.instagram.com/snccom",
-        icon: "instagram",
-        color: "#E4405F",
-    },
-    {
-        name: "Facebook",
-        desc: "facebook.com/snccom",
-        url: "https://www.facebook.com/snccom",
-        icon: "facebook",
-        color: "#1877F2",
-    },
+    { name: "네이버 블로그", desc: "현장 일상 · 노하우", url: "https://blog.naver.com/i_snc", icon: "blog", color: "#03C75A" },
+    { name: "네이버 카페", desc: "가맹점 커뮤니티", url: "https://cafe.naver.com/sncpc", icon: "cafe", color: "#03C75A" },
+    { name: "YouTube", desc: "IT · 교육 콘텐츠", url: "#", icon: "youtube", color: "#FF0000" },
+    { name: "SNC 쇼핑몰", desc: "i-snc.co.kr", url: "https://i-snc.co.kr", icon: "shop", color: "#0066FF" },
+    { name: "Instagram", desc: "@snccom", url: "https://www.instagram.com/snccom", icon: "instagram", color: "#E4405F" },
+    { name: "Facebook", desc: "facebook.com/snccom", url: "https://www.facebook.com/snccom", icon: "facebook", color: "#1877F2" },
 ]
 
 const categoryColors: Record<NewsItem["category"], { bg: string; text: string }> = {
@@ -90,57 +39,46 @@ const categoryColors: Record<NewsItem["category"], { bg: string; text: string }>
 }
 
 export default function NewsAndFamily() {
+    const [isMobile, setIsMobile] = React.useState(false)
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setMounted(true)
+        const check = () => setIsMobile(window.innerWidth <= 768)
+        check()
+        window.addEventListener("resize", check)
+        return () => window.removeEventListener("resize", check)
+    }, [])
+
+    const m = mounted && isMobile
+
     return (
-        <section style={{ background: "#FFFFFF", padding: "140px 80px" }}>
-            <div style={{ maxWidth: 1280, margin: "0 auto" }}>
+        <section style={{ background: "#FFFFFF", padding: m ? "72px 20px" : "140px 80px" }}>
+            <div style={{ maxWidth: m ? 480 : 1280, margin: "0 auto" }}>
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "1fr 1.1fr",
-                        gap: 80,
+                        gridTemplateColumns: m ? "1fr" : "1fr 1.1fr",
+                        gap: m ? 48 : 80,
                     }}
                 >
-                    {/* ─── LEFT: News ─── */}
+                    {/* LEFT: News */}
                     <div>
-                        <div style={{ marginBottom: 36 }}>
-                            <div
-                                style={{
-                                    fontSize: 13,
-                                    color: "#0046C0",
-                                    letterSpacing: 2,
-                                    fontWeight: 500,
-                                    marginBottom: 12,
-                                    fontFamily: "'Inter', sans-serif",
-                                }}
-                            >
+                        <div style={{ marginBottom: m ? 24 : 36 }}>
+                            <div style={{ fontSize: m ? 11 : 13, color: "#0046C0", letterSpacing: 2, fontWeight: 500, marginBottom: 10, fontFamily: "'Inter', sans-serif" }}>
                                 NEWS & UPDATES
                             </div>
-                            <h2
-                                style={{
-                                    fontSize: 36,
-                                    lineHeight: 1.25,
-                                    fontWeight: 500,
-                                    letterSpacing: -1,
-                                    color: "#0A1733",
-                                    margin: "0 0 12px 0",
-                                }}
-                            >
+                            <h2 style={{ fontSize: m ? 22 : 36, lineHeight: 1.25, fontWeight: 500, letterSpacing: m ? -0.6 : -1, color: "#0A1733", margin: "0 0 8px 0" }}>
                                 최신 소식
                             </h2>
-                            <p
-                                style={{
-                                    fontSize: 14,
-                                    color: "#5A6A8A",
-                                    margin: 0,
-                                }}
-                            >
+                            <p style={{ fontSize: m ? 12 : 14, color: "#5A6A8A", margin: 0 }}>
                                 SNC의 새로운 소식과 인사이트를 확인하세요.
                             </p>
                         </div>
 
                         <div style={{ display: "flex", flexDirection: "column" }}>
                             {newsItems.map((n, i) => (
-                                <NewsRow key={i} news={n} isLast={i === newsItems.length - 1} />
+                                <NewsRow key={i} news={n} isLast={i === newsItems.length - 1} isMobile={m} />
                             ))}
                         </div>
 
@@ -150,11 +88,11 @@ export default function NewsAndFamily() {
                                 display: "inline-flex",
                                 alignItems: "center",
                                 gap: 8,
-                                fontSize: 14,
+                                fontSize: m ? 13 : 14,
                                 color: "#0066FF",
                                 textDecoration: "none",
                                 fontWeight: 500,
-                                marginTop: 28,
+                                marginTop: 20,
                             }}
                         >
                             모든 소식 보기
@@ -162,40 +100,16 @@ export default function NewsAndFamily() {
                         </a>
                     </div>
 
-                    {/* ─── RIGHT: Family Sites ─── */}
+                    {/* RIGHT: Family Sites */}
                     <div>
-                        <div style={{ marginBottom: 36 }}>
-                            <div
-                                style={{
-                                    fontSize: 13,
-                                    color: "#0046C0",
-                                    letterSpacing: 2,
-                                    fontWeight: 500,
-                                    marginBottom: 12,
-                                    fontFamily: "'Inter', sans-serif",
-                                }}
-                            >
+                        <div style={{ marginBottom: m ? 20 : 36 }}>
+                            <div style={{ fontSize: m ? 11 : 13, color: "#0046C0", letterSpacing: 2, fontWeight: 500, marginBottom: 10, fontFamily: "'Inter', sans-serif" }}>
                                 FAMILY SITES
                             </div>
-                            <h2
-                                style={{
-                                    fontSize: 36,
-                                    lineHeight: 1.25,
-                                    fontWeight: 500,
-                                    letterSpacing: -1,
-                                    color: "#0A1733",
-                                    margin: "0 0 12px 0",
-                                }}
-                            >
+                            <h2 style={{ fontSize: m ? 22 : 36, lineHeight: 1.25, fontWeight: 500, letterSpacing: m ? -0.6 : -1, color: "#0A1733", margin: "0 0 8px 0" }}>
                                 SNC의 모든 채널
                             </h2>
-                            <p
-                                style={{
-                                    fontSize: 14,
-                                    color: "#5A6A8A",
-                                    margin: 0,
-                                }}
-                            >
+                            <p style={{ fontSize: m ? 12 : 14, color: "#5A6A8A", margin: 0 }}>
                                 각 채널에서 더 다양한 콘텐츠를 만나보세요.
                             </p>
                         </div>
@@ -203,12 +117,12 @@ export default function NewsAndFamily() {
                         <div
                             style={{
                                 display: "grid",
-                                gridTemplateColumns: "repeat(3, 1fr)",
-                                gap: 14,
+                                gridTemplateColumns: m ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+                                gap: m ? 10 : 14,
                             }}
                         >
                             {familySites.map((s) => (
-                                <FamilyCard key={s.name} site={s} />
+                                <FamilyCard key={s.name} site={s} isMobile={m} />
                             ))}
                         </div>
                     </div>
@@ -218,7 +132,7 @@ export default function NewsAndFamily() {
     )
 }
 
-function NewsRow({ news, isLast }: { news: NewsItem; isLast: boolean }) {
+function NewsRow({ news, isLast, isMobile }: { news: NewsItem; isLast: boolean; isMobile: boolean }) {
     const [hover, setHover] = React.useState(false)
     const c = categoryColors[news.category]
 
@@ -231,40 +145,35 @@ function NewsRow({ news, isLast }: { news: NewsItem; isLast: boolean }) {
             onMouseLeave={() => setHover(false)}
             style={{
                 display: "block",
-                padding: "20px 0",
+                padding: isMobile ? "14px 0" : "20px 0",
                 borderBottom: isLast ? "none" : "1px solid #E8ECF3",
                 textDecoration: "none",
                 color: "inherit",
                 transition: "all 0.2s ease",
             }}
         >
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
                 <span
                     style={{
-                        fontSize: 11,
+                        fontSize: 10,
                         fontWeight: 500,
                         color: c.text,
                         background: c.bg,
-                        padding: "3px 10px",
+                        padding: "2px 8px",
                         borderRadius: 100,
                         letterSpacing: 0.3,
+                        whiteSpace: "nowrap",
                     }}
                 >
                     {news.category}
                 </span>
-                <span
-                    style={{
-                        fontSize: 12,
-                        color: "#8A95AD",
-                        fontFamily: "'Inter', sans-serif",
-                    }}
-                >
+                <span style={{ fontSize: 11, color: "#8A95AD", fontFamily: "'Inter', sans-serif" }}>
                     {news.date}
                 </span>
             </div>
             <div
                 style={{
-                    fontSize: 16,
+                    fontSize: isMobile ? 14 : 16,
                     fontWeight: 500,
                     color: hover ? "#0066FF" : "#0A1733",
                     lineHeight: 1.5,
@@ -278,7 +187,7 @@ function NewsRow({ news, isLast }: { news: NewsItem; isLast: boolean }) {
     )
 }
 
-function FamilyCard({ site }: { site: FamilySite }) {
+function FamilyCard({ site, isMobile }: { site: FamilySite; isMobile: boolean }) {
     const [hover, setHover] = React.useState(false)
     const isExternal = site.url.startsWith("http")
 
@@ -293,8 +202,8 @@ function FamilyCard({ site }: { site: FamilySite }) {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
-                gap: 12,
-                padding: "18px 16px",
+                gap: isMobile ? 8 : 12,
+                padding: isMobile ? "14px 12px" : "18px 16px",
                 background: "#FFFFFF",
                 border: `1px solid ${hover ? site.color : "#E8ECF3"}`,
                 borderRadius: 12,
@@ -302,45 +211,29 @@ function FamilyCard({ site }: { site: FamilySite }) {
                 color: "inherit",
                 transition: "all 0.25s cubic-bezier(0.16, 1, 0.3, 1)",
                 transform: hover ? "translateY(-3px)" : "translateY(0)",
-                boxShadow: hover
-                    ? `0 8px 20px ${site.color}22`
-                    : "0 1px 2px rgba(10, 23, 51, 0.03)",
-                minHeight: 100,
+                boxShadow: hover ? `0 8px 20px ${site.color}22` : "0 1px 2px rgba(10, 23, 51, 0.03)",
+                minHeight: isMobile ? 86 : 100,
             }}
         >
             <div
                 style={{
-                    width: 36,
-                    height: 36,
+                    width: isMobile ? 30 : 36,
+                    height: isMobile ? 30 : 36,
                     background: hover ? site.color : `${site.color}15`,
-                    borderRadius: 9,
+                    borderRadius: 8,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     transition: "background 0.25s ease",
                 }}
             >
-                <FamilyIcon name={site.icon} color={hover ? "#FFFFFF" : site.color} />
+                <FamilyIcon name={site.icon} color={hover ? "#FFFFFF" : site.color} size={isMobile ? 15 : 18} />
             </div>
             <div>
-                <div
-                    style={{
-                        fontSize: 13,
-                        fontWeight: 500,
-                        color: "#0A1733",
-                        lineHeight: 1.3,
-                        letterSpacing: -0.2,
-                    }}
-                >
+                <div style={{ fontSize: isMobile ? 12 : 13, fontWeight: 500, color: "#0A1733", lineHeight: 1.3, letterSpacing: -0.2 }}>
                     {site.name}
                 </div>
-                <div
-                    style={{
-                        fontSize: 11,
-                        color: "#5A6A8A",
-                        marginTop: 3,
-                    }}
-                >
+                <div style={{ fontSize: isMobile ? 10 : 11, color: "#5A6A8A", marginTop: 2 }}>
                     {site.desc}
                 </div>
             </div>
@@ -348,10 +241,10 @@ function FamilyCard({ site }: { site: FamilySite }) {
     )
 }
 
-function FamilyIcon({ name, color }: { name: FamilySite["icon"]; color: string }) {
+function FamilyIcon({ name, color, size }: { name: FamilySite["icon"]; color: string; size: number }) {
     const common = {
-        width: 18,
-        height: 18,
+        width: size,
+        height: size,
         viewBox: "0 0 24 24",
         fill: "none",
         stroke: color,
@@ -399,7 +292,6 @@ function FamilyIcon({ name, color }: { name: FamilySite["icon"]; color: string }
                 <svg {...common}>
                     <rect x="2" y="2" width="20" height="20" rx="5" />
                     <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                 </svg>
             )
         case "facebook":

@@ -11,61 +11,38 @@ interface Pillar {
 }
 
 const pillars: Pillar[] = [
-    {
-        num: "01",
-        title: "전국 AS 네트워크",
-        tagline: "한 번 부르면, 어디서든",
-        desc: "PC·노트북·서버·CCTV·프린터 통합 출장 AS",
-        stat: "106 NODE · 전국망",
-    },
-    {
-        num: "02",
-        title: "B2B 기업 유지보수",
-        tagline: "사인 한 번, 다음 사고 걱정 끝",
-        desc: "311개사가 선택한 SLA 기반 IT 인프라 위탁",
-        stat: "311 기업계약",
-    },
-    {
-        num: "03",
-        title: "스마트 키오스크 & 클리닝",
-        tagline: "24시간 무인 입출고",
-        desc: "특허 출원 중인 무인 AS 시스템 + PC 클리닝 스테이션",
-        stat: "특허 출원 중",
-    },
-    {
-        num: "04",
-        title: "IT 교육 & 자격",
-        tagline: "FIXER가 되는 길",
-        desc: "SNC LAB · 국비지원 · 민간자격 · 국가공인 추진",
-        stat: "Tier 1~4 과정",
-    },
-    {
-        num: "05",
-        title: "MPS · CCTV 렌탈",
-        tagline: "월정액 IT 인프라",
-        desc: "프린터·CCTV 통합 관리 서비스 (전국망 기반)",
-        stat: "월 구독형",
-    },
+    { num: "01", title: "전국 AS 네트워크", tagline: "한 번 부르면, 어디서든", desc: "PC·노트북·서버·CCTV·프린터 통합 출장 AS", stat: "106 NODE · 전국망" },
+    { num: "02", title: "B2B 기업 유지보수", tagline: "사인 한 번, 다음 사고 걱정 끝", desc: "311개사가 선택한 SLA 기반 IT 인프라 위탁", stat: "311 기업계약" },
+    { num: "03", title: "스마트 키오스크 & 클리닝", tagline: "24시간 무인 입출고", desc: "특허 출원 중인 무인 AS 시스템 + PC 클리닝 스테이션", stat: "특허 출원 중" },
+    { num: "04", title: "IT 교육 & 자격", tagline: "FIXER가 되는 길", desc: "SNC LAB · 국비지원 · 민간자격 · 국가공인 추진", stat: "Tier 1~4 과정" },
+    { num: "05", title: "MPS · CCTV 렌탈", tagline: "월정액 IT 인프라", desc: "프린터·CCTV 통합 관리 서비스 (전국망 기반)", stat: "월 구독형" },
 ]
 
 export default function BusinessPillars() {
+    const [isMobile, setIsMobile] = React.useState(false)
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setMounted(true)
+        const check = () => setIsMobile(window.innerWidth <= 768)
+        check()
+        window.addEventListener("resize", check)
+        return () => window.removeEventListener("resize", check)
+    }, [])
+
+    const m = mounted && isMobile
+
     return (
-        <section
-            style={{
-                background: "#FFFFFF",
-                padding: "120px 80px",
-            }}
-        >
-            <div style={{ maxWidth: 1280, margin: "0 auto" }}>
-                {/* Heading */}
-                <div style={{ marginBottom: 64, textAlign: "center" }}>
+        <section style={{ background: "#FFFFFF", padding: m ? "72px 20px" : "120px 80px" }}>
+            <div style={{ maxWidth: m ? 480 : 1280, margin: "0 auto" }}>
+                <div style={{ marginBottom: m ? 36 : 64, textAlign: "center" }}>
                     <div
                         style={{
-                            fontSize: 13,
+                            fontSize: m ? 12 : 13,
                             color: "#0046C0",
                             letterSpacing: 2,
                             fontWeight: 500,
-                            marginBottom: 16,
+                            marginBottom: m ? 10 : 16,
                             fontFamily: "'Inter', sans-serif",
                         }}
                     >
@@ -73,38 +50,30 @@ export default function BusinessPillars() {
                     </div>
                     <h2
                         style={{
-                            fontSize: 44,
-                            lineHeight: 1.25,
+                            fontSize: m ? 26 : 44,
+                            lineHeight: m ? 1.3 : 1.25,
                             fontWeight: 500,
-                            letterSpacing: -1.5,
+                            letterSpacing: m ? -0.8 : -1.5,
                             color: "#0A1733",
-                            margin: "0 0 16px 0",
+                            margin: m ? "0 0 12px 0" : "0 0 16px 0",
                         }}
                     >
                         SNC가 하는 일
                     </h2>
-                    <p
-                        style={{
-                            fontSize: 17,
-                            lineHeight: 1.6,
-                            color: "#5A6A8A",
-                            margin: 0,
-                        }}
-                    >
+                    <p style={{ fontSize: m ? 13 : 17, lineHeight: 1.6, color: "#5A6A8A", margin: 0 }}>
                         25년의 손기술 위에, 다섯 개의 기둥을 세웁니다.
                     </p>
                 </div>
 
-                {/* Pillar Grid */}
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(5, 1fr)",
-                        gap: 20,
+                        gridTemplateColumns: m ? "1fr" : "repeat(5, 1fr)",
+                        gap: m ? 12 : 20,
                     }}
                 >
                     {pillars.map((p) => (
-                        <PillarCard key={p.num} {...p} />
+                        <PillarCard key={p.num} {...p} isMobile={m} />
                     ))}
                 </div>
             </div>
@@ -112,7 +81,7 @@ export default function BusinessPillars() {
     )
 }
 
-function PillarCard({ num, title, tagline, desc, stat }: Pillar) {
+function PillarCard({ num, title, tagline, desc, stat, isMobile }: Pillar & { isMobile: boolean }) {
     const [hover, setHover] = React.useState(false)
     return (
         <div
@@ -122,106 +91,80 @@ function PillarCard({ num, title, tagline, desc, stat }: Pillar) {
                 background: hover ? "#F8FAFF" : "#FFFFFF",
                 border: `1px solid ${hover ? "#0066FF" : "#E8ECF3"}`,
                 borderRadius: 16,
-                padding: "32px 24px",
+                padding: isMobile ? "20px 18px" : "32px 24px",
                 transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                 cursor: "pointer",
-                minHeight: 320,
-                display: "flex",
-                flexDirection: "column",
+                minHeight: isMobile ? "auto" : 320,
+                display: isMobile ? "grid" : "flex",
+                gridTemplateColumns: isMobile ? "auto 1fr" : undefined,
+                gap: isMobile ? 14 : undefined,
+                flexDirection: isMobile ? undefined : "column",
                 transform: hover ? "translateY(-4px)" : "translateY(0)",
-                boxShadow: hover
-                    ? "0 12px 28px rgba(0, 102, 255, 0.10)"
-                    : "0 1px 2px rgba(10, 23, 51, 0.03)",
+                boxShadow: hover ? "0 12px 28px rgba(0, 102, 255, 0.10)" : "0 1px 2px rgba(10, 23, 51, 0.03)",
             }}
         >
             {/* Number */}
             <div
                 style={{
-                    fontSize: 32,
+                    fontSize: isMobile ? 24 : 32,
                     fontWeight: 500,
                     color: hover ? "#0066FF" : "#C5D0E5",
                     fontFamily: "'Inter', sans-serif",
                     letterSpacing: -1,
-                    marginBottom: 24,
+                    marginBottom: isMobile ? 0 : 24,
                     transition: "color 0.3s ease",
                     lineHeight: 1,
+                    flexShrink: 0,
                 }}
             >
                 {num}
             </div>
 
-            {/* Title */}
-            <h3
-                style={{
-                    fontSize: 18,
-                    fontWeight: 500,
-                    color: "#0A1733",
-                    margin: "0 0 8px 0",
-                    letterSpacing: -0.3,
-                    lineHeight: 1.3,
-                }}
-            >
-                {title}
-            </h3>
+            <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+                <h3 style={{ fontSize: isMobile ? 15 : 18, fontWeight: 500, color: "#0A1733", margin: "0 0 6px 0", letterSpacing: -0.3, lineHeight: 1.3 }}>
+                    {title}
+                </h3>
 
-            {/* Tagline */}
-            <div
-                style={{
-                    fontSize: 13,
-                    color: "#0046C0",
-                    fontWeight: 500,
-                    marginBottom: 14,
-                    lineHeight: 1.4,
-                }}
-            >
-                “{tagline}”
-            </div>
+                <div style={{ fontSize: isMobile ? 11 : 13, color: "#0046C0", fontWeight: 500, marginBottom: isMobile ? 8 : 14, lineHeight: 1.4 }}>
+                    "{tagline}"
+                </div>
 
-            {/* Description */}
-            <p
-                style={{
-                    fontSize: 13,
-                    lineHeight: 1.65,
-                    color: "#5A6A8A",
-                    margin: 0,
-                    flex: 1,
-                }}
-            >
-                {desc}
-            </p>
+                <p style={{ fontSize: isMobile ? 12 : 13, lineHeight: 1.65, color: "#5A6A8A", margin: 0, flex: isMobile ? "none" : 1 }}>
+                    {desc}
+                </p>
 
-            {/* Stat Pill */}
-            <div
-                style={{
-                    marginTop: 24,
-                    paddingTop: 16,
-                    borderTop: `1px solid ${hover ? "#E0EAFF" : "#F0F2F5"}`,
-                    transition: "border-color 0.3s ease",
-                }}
-            >
                 <div
                     style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 6,
-                        fontSize: 11,
-                        fontWeight: 500,
-                        color: hover ? "#0066FF" : "#5A6A8A",
-                        letterSpacing: 0.3,
-                        transition: "color 0.3s ease",
+                        marginTop: isMobile ? 12 : 24,
+                        paddingTop: isMobile ? 10 : 16,
+                        borderTop: `1px solid ${hover ? "#E0EAFF" : "#F0F2F5"}`,
+                        transition: "border-color 0.3s ease",
                     }}
                 >
-                    <span
+                    <div
                         style={{
-                            width: 5,
-                            height: 5,
-                            background: hover ? "#0066FF" : "#B8C5E0",
-                            borderRadius: "50%",
-                            display: "inline-block",
-                            transition: "background 0.3s ease",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 6,
+                            fontSize: isMobile ? 10 : 11,
+                            fontWeight: 500,
+                            color: hover ? "#0066FF" : "#5A6A8A",
+                            letterSpacing: 0.3,
+                            transition: "color 0.3s ease",
                         }}
-                    />
-                    {stat}
+                    >
+                        <span
+                            style={{
+                                width: 5,
+                                height: 5,
+                                background: hover ? "#0066FF" : "#B8C5E0",
+                                borderRadius: "50%",
+                                display: "inline-block",
+                                transition: "background 0.3s ease",
+                            }}
+                        />
+                        {stat}
+                    </div>
                 </div>
             </div>
         </div>

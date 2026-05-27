@@ -3,6 +3,19 @@
 import * as React from "react"
 
 export default function TrustBar() {
+    const [isMobile, setIsMobile] = React.useState(false)
+    const [mounted, setMounted] = React.useState(false)
+
+    React.useEffect(() => {
+        setMounted(true)
+        const check = () => setIsMobile(window.innerWidth <= 768)
+        check()
+        window.addEventListener("resize", check)
+        return () => window.removeEventListener("resize", check)
+    }, [])
+
+    const m = mounted && isMobile
+
     const items = [
         { name: "KOSA", subtitle: "한국AI·SW협회", verified: true },
         { name: "주연테크", subtitle: "공식대리점", verified: true },
@@ -18,19 +31,19 @@ export default function TrustBar() {
         <section
             style={{
                 background: "#FFFFFF",
-                padding: "80px 80px",
+                padding: m ? "56px 20px" : "80px 80px",
                 maxWidth: 1440,
                 margin: "0 auto",
             }}
         >
             <div
                 style={{
-                    fontSize: 13,
+                    fontSize: m ? 12 : 13,
                     color: "#5A6A8A",
                     letterSpacing: 2,
                     textAlign: "center",
                     fontWeight: 500,
-                    marginBottom: 48,
+                    marginBottom: m ? 28 : 48,
                     fontFamily: "'Inter', sans-serif",
                 }}
             >
@@ -40,9 +53,11 @@ export default function TrustBar() {
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(8, 1fr)",
-                    gap: 16,
+                    gridTemplateColumns: m ? "repeat(2, 1fr)" : "repeat(8, 1fr)",
+                    gap: m ? 10 : 16,
                     alignItems: "center",
+                    maxWidth: m ? 360 : "100%",
+                    margin: "0 auto",
                 }}
             >
                 {items.map((item) => (
@@ -53,8 +68,8 @@ export default function TrustBar() {
                             flexDirection: "column",
                             alignItems: "center",
                             justifyContent: "center",
-                            height: 80,
-                            padding: "12px 8px",
+                            height: m ? 64 : 80,
+                            padding: m ? "10px 6px" : "12px 8px",
                             background: "#F8FAFF",
                             border: "1px solid #E8ECF3",
                             borderRadius: 10,
@@ -64,7 +79,7 @@ export default function TrustBar() {
                     >
                         <div
                             style={{
-                                fontSize: 14,
+                                fontSize: m ? 12 : 14,
                                 fontWeight: 500,
                                 color: "#0A1733",
                                 fontFamily: "'Inter', sans-serif",
@@ -75,9 +90,9 @@ export default function TrustBar() {
                         </div>
                         <div
                             style={{
-                                fontSize: 11,
+                                fontSize: m ? 9.5 : 11,
                                 color: "#5A6A8A",
-                                marginTop: 4,
+                                marginTop: 3,
                             }}
                         >
                             {item.subtitle}
@@ -86,12 +101,12 @@ export default function TrustBar() {
                             <div
                                 style={{
                                     position: "absolute",
-                                    top: 6,
-                                    right: 8,
-                                    fontSize: 9,
+                                    top: 4,
+                                    right: 6,
+                                    fontSize: m ? 8 : 9,
                                     color: "#8A95AD",
                                     background: "#FFFFFF",
-                                    padding: "2px 6px",
+                                    padding: "2px 5px",
                                     borderRadius: 4,
                                     border: "1px solid #E8ECF3",
                                     letterSpacing: 0.3,
