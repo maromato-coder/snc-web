@@ -5,6 +5,8 @@ import LPBPain from "@/components/lpb/LPBPain"
 import LPBSolution from "@/components/lpb/LPBSolution" 
 import LPBSLA from "@/components/lpb/LPBSLA" 
 import LPBCoverage from "@/components/lpb/LPBCoverage"
+import LPBProcess from "@/components/lpb/LPBProcess" 
+import LPBStories from "@/components/lpb/LPBStories"
 
 export default function EnterprisePage() {
     return (
@@ -14,6 +16,8 @@ export default function EnterprisePage() {
             <LPBSolution />
             <LPBSLA />
             <LPBCoverage />
+            <LPBProcess /> 
+            <LPBStories /> 
         </main>
     )
 }
