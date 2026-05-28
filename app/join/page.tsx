@@ -6,6 +6,7 @@ import LPANewIdentity from "@/components/lpa/LPANewIdentity"
 import LPASystem from "@/components/lpa/LPASystem" 
 import LPAGrowth from "@/components/lpa/LPAGrowth"
 import LPAStories from "@/components/lpa/LPAStories" 
+import LPAPricing from "@/components/lpa/LPAPricing" 
 export default function JoinPage() {
     return (
         <main style={{ background: "#050E1F", minHeight: "100vh" }}>
@@ -15,6 +16,7 @@ export default function JoinPage() {
             <LPASystem />   
             <LPAGrowth />
             <LPAStories /> 
+            <LPAPricing />
         </main>
     )
 }
