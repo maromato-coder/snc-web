@@ -7,6 +7,7 @@ import LPBSLA from "@/components/lpb/LPBSLA"
 import LPBCoverage from "@/components/lpb/LPBCoverage"
 import LPBProcess from "@/components/lpb/LPBProcess" 
 import LPBStories from "@/components/lpb/LPBStories"
+import LPBFinalCTA from "@/components/lpb/LPBFinalCTA" 
 
 export default function EnterprisePage() {
     return (
@@ -18,6 +19,7 @@ export default function EnterprisePage() {
             <LPBCoverage />
             <LPBProcess /> 
             <LPBStories /> 
+            <LPBFinalCTA /> 
         </main>
     )
 }
