@@ -7,6 +7,7 @@ import LPASystem from "@/components/lpa/LPASystem"
 import LPAGrowth from "@/components/lpa/LPAGrowth"
 import LPAStories from "@/components/lpa/LPAStories" 
 import LPAPricing from "@/components/lpa/LPAPricing" 
+import LPAFinalCTA from "@/components/lpa/LPAFinalCTA" 
 export default function JoinPage() {
     return (
         <main style={{ background: "#050E1F", minHeight: "100vh" }}>
@@ -17,6 +18,7 @@ export default function JoinPage() {
             <LPAGrowth />
             <LPAStories /> 
             <LPAPricing />
+            <LPAFinalCTA /> 
         </main>
     )
 }
