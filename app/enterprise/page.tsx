@@ -3,6 +3,7 @@
 import LPBHero from "@/components/lpb/LPBHero"
 import LPBPain from "@/components/lpb/LPBPain" 
 import LPBSolution from "@/components/lpb/LPBSolution" 
+import LPBSLA from "@/components/lpb/LPBSLA" 
 
 export default function EnterprisePage() {
     return (
@@ -10,6 +11,7 @@ export default function EnterprisePage() {
             <LPBHero />
             <LPBPain />
             <LPBSolution />
+            <LPBSLA />
         </main>
     )
 }
