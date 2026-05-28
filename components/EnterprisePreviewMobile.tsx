@@ -87,7 +87,7 @@ export default function EnterprisePreviewMobile() {
 
                 {/* CTA */}
                 <a
-                    href="#"
+                    href="/enterprise"
                     style={{
                         display: "inline-flex",
                         alignItems: "center",

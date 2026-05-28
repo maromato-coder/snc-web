@@ -99,7 +99,7 @@ export default function PartnerPreviewMobile() {
 
                 {/* CTA */}
                 <a
-                    href="#"
+                    href="/join"
                     style={{
                         display: "inline-flex",
                         alignItems: "center",

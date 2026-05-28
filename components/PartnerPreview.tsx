@@ -91,7 +91,7 @@ export default function PartnerPreview() {
                     </div>
 
                     <a
-                        href="#"
+                        href="/join"
                         style={{
                             display: "inline-flex",
                             alignItems: "center",

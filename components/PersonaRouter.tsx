@@ -6,14 +6,15 @@ interface CardData {
     title: string
     desc: string
     cta: string
+    link: string
     icon: "building" | "store" | "shopping" | "education"
 }
 
 const cards: CardData[] = [
-    { title: "기업 IT 담당자", desc: "회사 PC·서버 관리에 지치셨나요?", cta: "B2B 솔루션 보기", icon: "building" },
-    { title: "가맹 희망자", desc: "컴퓨터 자영업의 다음 단계가 궁금하신가요?", cta: "NODE 가맹 안내", icon: "store" },
-    { title: "일반 소비자", desc: "PC 구매·수리·중고가 필요하신가요?", cta: "SNC 쇼핑몰로", icon: "shopping" },
-    { title: "교육·자격", desc: "FIXER가 되고 싶으신가요?", cta: "SNC LAB 안내", icon: "education" },
+        { title: "기업 IT 담당자", desc: "회사 PC·서버 관리에 지치셨나요?", cta: "B2B 솔루션 보기", icon: "building", link: "/enterprise" },
+    { title: "가맹 희망자", desc: "컴퓨터 자영업의 다음 단계가 궁금하신가요?", cta: "NODE 가맹 안내", icon: "store", link: "/join" },
+    { title: "일반 소비자", desc: "PC 구매·수리·중고가 필요하신가요?", cta: "SNC 쇼핑몰로", icon: "shopping", link: "https://i-snc.co.kr" },
+    { title: "교육·자격", desc: "FIXER가 되고 싶으신가요?", cta: "SNC LAB 안내", icon: "education", link: "#" },
 ]
 
 export default function PersonaRouter() {
@@ -74,11 +75,11 @@ export default function PersonaRouter() {
     )
 }
 
-function PersonaCard({ title, desc, cta, icon, isMobile }: CardData & { isMobile: boolean }) {
+function PersonaCard({ title, desc, cta, icon, link, isMobile }: CardData & { isMobile: boolean }) {
     const [hover, setHover] = React.useState(false)
     return (
         <a
-            href="#"
+            href={link}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             style={{
