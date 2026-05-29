@@ -47,7 +47,7 @@ const stories: Story[] = [
 
 export default function CustomerStories() {
     return (
-        <section style={{ background: "#F8FAFF", padding: "140px 80px" }}>
+        <section id="customers" style={{ background: "#F8FAFF", padding: "140px 80px" }}>
             <div style={{ maxWidth: 1440, margin: "0 auto" }}>
                 {/* Heading */}
                 <div style={{ textAlign: "center", marginBottom: 80 }}>

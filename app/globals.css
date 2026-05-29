@@ -172,3 +172,6 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+html {
+  scroll-behavior: smooth;
+}

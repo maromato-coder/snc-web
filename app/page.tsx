@@ -70,10 +70,10 @@ export default function Home() {
 
                     {!isMobile && (
                         <ul style={{ display: "flex", gap: 40, listStyle: "none", margin: 0, padding: 0 }}>
-                            <li><a href="#" style={navLinkStyle}>Solutions</a></li>
-                            <li><a href="#" style={navLinkStyle}>Network</a></li>
-                            <li><a href="#" style={navLinkStyle}>Customers</a></li>
-                            <li><a href="#" style={navLinkStyle}>About</a></li>
+                            <li><a href="#solutions" style={navLinkStyle}>Solutions</a></li>
+                            <li><a href="#network" style={navLinkStyle}>Network</a></li>
+                            <li><a href="#customers" style={navLinkStyle}>Customers</a></li>
+                            <li><a href="#about" style={navLinkStyle}>About</a></li>
                         </ul>
                     )}
 

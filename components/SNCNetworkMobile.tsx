@@ -64,7 +64,7 @@ const nodes: Node[] = [
 
 export default function SNCNetworkMobile() {
     return (
-        <section style={{ background: "#F8FAFF", padding: "72px 20px" }}>
+        <section id="network" style={{ background: "#F8FAFF", padding: "72px 20px" }}>
             <div style={{ maxWidth: 480, margin: "0 auto" }}>
                 {/* Heading */}
                 <div style={{ textAlign: "center", marginBottom: 40 }}>

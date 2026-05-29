@@ -22,7 +22,7 @@ const milestones: Milestone[] = [
 
 export default function TimelineMobile() {
     return (
-        <section style={{ background: "#FFFFFF", padding: "72px 20px" }}>
+        <section id="about" style={{ background: "#FFFFFF", padding: "72px 20px" }}>
             <div style={{ maxWidth: 480, margin: "0 auto" }}>
                 {/* Heading */}
                 <div style={{ textAlign: "center", marginBottom: 36 }}>

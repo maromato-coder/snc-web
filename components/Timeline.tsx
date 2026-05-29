@@ -41,7 +41,7 @@ export default function Timeline() {
     if (mounted && isMobile) return <TimelineMobile />
 
     return (
-        <section style={{ background: "#FFFFFF", padding: "140px 80px" }}>
+        <section id="about" style={{ background: "#FFFFFF", padding: "140px 80px" }}>
             <div style={{ maxWidth: 1440, margin: "0 auto" }}>
                 <div style={{ textAlign: "center", marginBottom: 80 }}>
                     <div style={{ fontSize: 13, color: "#0046C0", letterSpacing: 2, fontWeight: 500, marginBottom: 16, fontFamily: "'Inter', sans-serif" }}>
