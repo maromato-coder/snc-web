@@ -2,11 +2,13 @@
 
 import * as React from "react"
 
-export default function LPAFinalCTA() {
+const companySizes = ["~50명", "50~200명", "200~500명", "500명+"]
+
+export default function LPBFinalCTA() {
     const [isMobile, setIsMobile] = React.useState(false)
     const [mounted, setMounted] = React.useState(false)
 
-    const [form, setForm] = React.useState({ name: "", phone: "", region: "", message: "" })
+    const [form, setForm] = React.useState({ company: "", name: "", phone: "", size: "", message: "" })
     const [submitted, setSubmitted] = React.useState(false)
     const [submitting, setSubmitting] = React.useState(false)
     const [error, setError] = React.useState("")
@@ -27,8 +29,8 @@ export default function LPAFinalCTA() {
     }
 
     const handleSubmit = async () => {
-        if (!form.name.trim() || !form.phone.trim()) {
-            setError("이름과 연락처는 필수입니다.")
+        if (!form.company.trim() || !form.name.trim() || !form.phone.trim()) {
+            setError("회사명, 담당자명, 연락처는 필수입니다.")
             return
         }
         setSubmitting(true)
@@ -37,7 +39,7 @@ export default function LPAFinalCTA() {
             const res = await fetch("/api/contact", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ type: "join", ...form }),
+                body: JSON.stringify({ type: "enterprise", ...form }),
             })
             if (!res.ok) throw new Error("submit failed")
             setSubmitted(true)
@@ -51,7 +53,7 @@ export default function LPAFinalCTA() {
 
     return (
         <section
-            id="apply"
+            id="consult"
             style={{
                 background: "#050E1F",
                 color: "#FFFFFF",
@@ -60,69 +62,29 @@ export default function LPAFinalCTA() {
                 overflow: "hidden",
             }}
         >
-            <div
-                style={{
-                    position: "absolute",
-                    inset: 0,
-                    backgroundImage:
-                        "radial-gradient(circle at 25% 40%, rgba(0, 102, 255, 0.22) 0%, transparent 50%), radial-gradient(circle at 80% 60%, rgba(0, 184, 240, 0.10) 0%, transparent 55%)",
-                    pointerEvents: "none",
-                }}
-            />
-
-            <div
-                style={{
-                    position: "relative",
-                    maxWidth: 1200,
-                    margin: "0 auto",
-                    display: "grid",
-                    gridTemplateColumns: m ? "1fr" : "1fr 1fr",
-                    gap: m ? 40 : 80,
-                    alignItems: "center",
-                }}
-            >
+            <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 25% 40%, rgba(0, 102, 255, 0.22) 0%, transparent 50%), radial-gradient(circle at 80% 60%, rgba(0, 184, 240, 0.10) 0%, transparent 55%)", pointerEvents: "none" }} />
+            <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: m ? "1fr" : "1fr 1fr", gap: m ? 40 : 80, alignItems: "center" }}>
                 {/* LEFT */}
                 <div>
-                    <div
-                        style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 10,
-                            background: "rgba(51, 133, 255, 0.12)",
-                            border: "1px solid rgba(51, 133, 255, 0.25)",
-                            padding: m ? "6px 14px" : "8px 18px",
-                            borderRadius: 100,
-                            fontSize: m ? 11 : 13,
-                            letterSpacing: 1.8,
-                            color: "#66AAFF",
-                            marginBottom: m ? 24 : 32,
-                            fontWeight: 500,
-                            fontFamily: "'Inter', sans-serif",
-                        }}
-                    >
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "rgba(51, 133, 255, 0.12)", border: "1px solid rgba(51, 133, 255, 0.25)", padding: m ? "6px 14px" : "8px 18px", borderRadius: 100, fontSize: m ? 11 : 13, letterSpacing: 1.8, color: "#66AAFF", marginBottom: m ? 24 : 32, fontWeight: 500, fontFamily: "'Inter', sans-serif" }}>
                         <span style={{ width: 7, height: 7, background: "#66AAFF", borderRadius: "50%" }} />
-                        지금 신청하기
+                        무료 IT 진단 신청
                     </div>
                     <h2 style={{ fontSize: m ? 30 : 48, lineHeight: 1.2, fontWeight: 500, letterSpacing: m ? -1 : -2, color: "#FFFFFF", margin: m ? "0 0 20px 0" : "0 0 28px 0" }}>
-                        25년의 손기술,
+                        이제 IT 걱정은
                         <br />
-                        <span style={{ color: "#66AAFF" }}>이제 이름을 가질 시간.</span>
+                        <span style={{ color: "#66AAFF" }}>SNC에 맡기세요.</span>
                     </h2>
                     <p style={{ fontSize: m ? 15 : 18, lineHeight: 1.7, color: "rgba(255, 255, 255, 0.7)", margin: m ? "0 0 32px 0" : "0 0 40px 0" }}>
-                        지금 신청하면 90일 무료로 모든 시스템을 경험합니다. 부담 없이 시작하고, 직접 겪어본 뒤 결정하세요.
+                        무료 진단으로 현재 IT 환경을 점검받으세요. 진단 결과와 맞춤 견적까지 비용 부담 없이 제공합니다.
                     </p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 14, paddingTop: m ? 28 : 32, borderTop: "1px solid rgba(255, 255, 255, 0.12)" }}>
-                        <div style={{ fontSize: m ? 13 : 14, color: "rgba(255, 255, 255, 0.55)", marginBottom: 4 }}>전화·카톡 상담이 편하시다면</div>
-                        <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                            <a href="tel:1566-8099" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.18)", color: "#FFFFFF", padding: m ? "12px 18px" : "14px 22px", borderRadius: 12, fontSize: m ? 14 : 15, textDecoration: "none", fontWeight: 500 }}>
-                                <PhoneIcon />
-                                1566-8099
-                            </a>
-                            <a href="https://pf.kakao.com/" target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#FEE500", color: "#3A1D1D", padding: m ? "12px 18px" : "14px 22px", borderRadius: 12, fontSize: m ? 14 : 15, textDecoration: "none", fontWeight: 500 }}>
-                                <KakaoIcon />
-                                카톡 상담
-                            </a>
-                        </div>
+                        <div style={{ fontSize: m ? 13 : 14, color: "rgba(255, 255, 255, 0.55)", marginBottom: 4 }}>전화 상담이 편하시다면</div>
+                        <a href="tel:1566-8099" style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "rgba(255, 255, 255, 0.08)", border: "1px solid rgba(255, 255, 255, 0.18)", color: "#FFFFFF", padding: m ? "12px 18px" : "14px 24px", borderRadius: 12, fontSize: m ? 15 : 16, textDecoration: "none", fontWeight: 500, width: "fit-content" }}>
+                            <PhoneIcon />
+                            1566-8099
+                            <span style={{ fontSize: 13, color: "rgba(255,255,255,0.5)", marginLeft: 4 }}>평일 09:00~18:00</span>
+                        </a>
                     </div>
                 </div>
 
@@ -135,9 +97,9 @@ export default function LPAFinalCTA() {
                                     <path d="M5 13l4 4L19 7" stroke="#00E0B8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
-                            <h3 style={{ fontSize: m ? 20 : 24, fontWeight: 500, color: "#FFFFFF", margin: "0 0 12px 0", letterSpacing: -0.5 }}>신청이 접수되었습니다</h3>
+                            <h3 style={{ fontSize: m ? 20 : 24, fontWeight: 500, color: "#FFFFFF", margin: "0 0 12px 0", letterSpacing: -0.5 }}>진단 신청이 접수되었습니다</h3>
                             <p style={{ fontSize: m ? 14 : 15, color: "rgba(255, 255, 255, 0.65)", lineHeight: 1.6, margin: "0 0 24px 0" }}>
-                                {form.name}님, 감사합니다.
+                                {form.company} {form.name}님, 감사합니다.
                                 <br />
                                 영업일 기준 1~2일 내에 담당자가 연락드립니다.
                             </p>
@@ -147,20 +109,49 @@ export default function LPAFinalCTA() {
                         </div>
                     ) : (
                         <>
-                            <h3 style={{ fontSize: m ? 20 : 24, fontWeight: 500, color: "#FFFFFF", margin: "0 0 8px 0", letterSpacing: -0.5 }}>가맹 상담 신청</h3>
+                            <h3 style={{ fontSize: m ? 20 : 24, fontWeight: 500, color: "#FFFFFF", margin: "0 0 8px 0", letterSpacing: -0.5 }}>무료 진단 신청</h3>
                             <p style={{ fontSize: m ? 13 : 14, color: "rgba(255, 255, 255, 0.6)", margin: m ? "0 0 24px 0" : "0 0 28px 0", lineHeight: 1.5 }}>간단히 남겨주시면 담당자가 직접 연락드립니다.</p>
                             <div style={{ display: "flex", flexDirection: "column", gap: m ? 14 : 16 }}>
-                                <FormField label="이름" required>
-                                    <input name="name" value={form.name} onChange={handleChange} placeholder="홍길동" disabled={submitting} style={inputStyle} />
+                                <FormField label="회사명" required>
+                                    <input name="company" value={form.company} onChange={handleChange} placeholder="(주)○○○" disabled={submitting} style={inputStyle} />
                                 </FormField>
-                                <FormField label="연락처" required>
-                                    <input name="phone" value={form.phone} onChange={handleChange} placeholder="010-0000-0000" inputMode="tel" disabled={submitting} style={inputStyle} />
-                                </FormField>
-                                <FormField label="지역">
-                                    <input name="region" value={form.region} onChange={handleChange} placeholder="예: 서울 강동구" disabled={submitting} style={inputStyle} />
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                                    <FormField label="담당자명" required>
+                                        <input name="name" value={form.name} onChange={handleChange} placeholder="홍길동" disabled={submitting} style={inputStyle} />
+                                    </FormField>
+                                    <FormField label="연락처" required>
+                                        <input name="phone" value={form.phone} onChange={handleChange} placeholder="010-0000-0000" inputMode="tel" disabled={submitting} style={inputStyle} />
+                                    </FormField>
+                                </div>
+                                <FormField label="기업 규모">
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
+                                        {companySizes.map((size) => (
+                                            <button
+                                                key={size}
+                                                type="button"
+                                                onClick={() => setForm({ ...form, size })}
+                                                disabled={submitting}
+                                                style={{
+                                                    background: form.size === size ? "#0066FF" : "rgba(255,255,255,0.06)",
+                                                    border: `1px solid ${form.size === size ? "#0066FF" : "rgba(255,255,255,0.15)"}`,
+                                                    color: "#FFFFFF",
+                                                    padding: m ? "10px 6px" : "11px 8px",
+                                                    borderRadius: 9,
+                                                    fontSize: m ? 12 : 13,
+                                                    cursor: submitting ? "wait" : "pointer",
+                                                    fontFamily: "inherit",
+                                                    fontWeight: form.size === size ? 500 : 400,
+                                                    transition: "all 0.2s ease",
+                                                    opacity: submitting ? 0.6 : 1,
+                                                }}
+                                            >
+                                                {size}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </FormField>
                                 <FormField label="문의 내용">
-                                    <textarea name="message" value={form.message} onChange={handleChange} placeholder="궁금한 점을 자유롭게 적어주세요 (선택)" rows={3} disabled={submitting} style={{ ...inputStyle, resize: "vertical", minHeight: 80, fontFamily: "inherit" }} />
+                                    <textarea name="message" value={form.message} onChange={handleChange} placeholder="관리가 필요한 IT 자산이나 궁금한 점을 적어주세요 (선택)" rows={3} disabled={submitting} style={{ ...inputStyle, resize: "vertical", minHeight: 80, fontFamily: "inherit" }} />
                                 </FormField>
                                 {error && <div style={{ fontSize: 13, color: "#FF6B6B", marginTop: -4 }}>{error}</div>}
                                 <button
@@ -193,7 +184,7 @@ export default function LPAFinalCTA() {
                                         </>
                                     ) : (
                                         <>
-                                            90일 무료로 시작하기
+                                            무료 진단 신청하기
                                             <span style={{ fontFamily: "'Inter', sans-serif" }}>→</span>
                                         </>
                                     )}
@@ -246,14 +237,6 @@ function PhoneIcon() {
     return (
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.13.96.36 1.9.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0122 16.92z" stroke="#FFFFFF" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-    )
-}
-
-function KakaoIcon() {
-    return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="#3A1D1D">
-            <path d="M12 3C6.48 3 2 6.48 2 10.8c0 2.74 1.83 5.15 4.6 6.52-.2.73-.73 2.65-.84 3.06-.13.51.19.5.4.36.16-.1 2.6-1.77 3.66-2.49.7.1 1.43.15 2.18.15 5.52 0 10-3.48 10-7.8S17.52 3 12 3z" />
         </svg>
     )
 }
