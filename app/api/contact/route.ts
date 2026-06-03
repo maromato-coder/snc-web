@@ -7,8 +7,8 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 // ════════════════════════════════════════════════
 // POST /api/contact
 // LP-A (가맹) / LP-B (기업) 폼 제출을 받아서
-// 1) Supabase DB에 저장
-// 2) maromato@gmail.com 으로 알림 메일 발송
+// 1) Supabase DB에 저장 (site_id, channel 포함)
+// 2) 알림 메일 발송
 // ════════════════════════════════════════════════
 
 interface SubmissionBody {
@@ -22,6 +22,12 @@ interface SubmissionBody {
     company?: string
     size?: string
 }
+
+// 사이트·채널 정보 (폼 종류 → 라벨)
+const SITE_INFO = {
+    join: { site_id: "snc-main", channel: "form", label: "SNC 메인 · 가맹 신청 폼" },
+    enterprise: { site_id: "snc-main", channel: "form", label: "SNC 메인 · 기업 진단 폼" },
+} as const
 
 export async function POST(req: NextRequest) {
     try {
@@ -41,6 +47,8 @@ export async function POST(req: NextRequest) {
             )
         }
 
+        const siteInfo = SITE_INFO[body.type]
+
         // ──────── 1. DB 저장 (필수) ────────
         const supabase = createServerSupabaseClient()
         const { data, error: dbError } = await supabase
@@ -53,6 +61,9 @@ export async function POST(req: NextRequest) {
                 region: body.region?.trim() || null,
                 company: body.company?.trim() || null,
                 size: body.size?.trim() || null,
+                // Phase 4.2: 출처 정보
+                site_id: siteInfo.site_id,
+                channel: siteInfo.channel,
             })
             .select()
             .single()
@@ -75,12 +86,11 @@ export async function POST(req: NextRequest) {
 
             await resend.emails.send({
                 from: "SNC 신청 알림 <noreply@sncpc.com>",
-                to: ["maromato@gmail.com"],
+                to: [process.env.RECIPIENT_EMAIL || "maromato@gmail.com"],
                 subject: `[SNC] 새 ${typeLabel} - ${subjectName}`,
-                html: renderEmailHtml(body),
+                html: renderEmailHtml(body, siteInfo.label),
             })
         } catch (mailError) {
-            // 메일 실패는 로깅만 — DB 저장은 됐으니 사용자에겐 성공 응답
             console.error("[/api/contact] Email failed (data saved):", mailError)
         }
 
@@ -97,7 +107,7 @@ export async function POST(req: NextRequest) {
 // ════════════════════════════════════════════════
 // 알림 메일 HTML 템플릿
 // ════════════════════════════════════════════════
-function renderEmailHtml(body: SubmissionBody): string {
+function renderEmailHtml(body: SubmissionBody, sourceLabel: string): string {
     const isJoin = body.type === "join"
     const typeLabel = isJoin ? "🚀 NODE 가맹 신청" : "🏢 기업 IT 진단 신청"
     const typeColor = isJoin ? "#0066FF" : "#003BB5"
@@ -110,18 +120,11 @@ function renderEmailHtml(body: SubmissionBody): string {
             `<a href="tel:${escapeHtml(body.phone)}" style="color: #0066FF; text-decoration: none; font-weight: 500;">${escapeHtml(body.phone)}</a>`
         )
     )
-    if (isJoin && body.region) {
-        rows.push(row("지역", escapeHtml(body.region)))
-    }
-    if (!isJoin && body.company) {
-        rows.push(row("회사명", escapeHtml(body.company)))
-    }
-    if (!isJoin && body.size) {
-        rows.push(row("기업 규모", escapeHtml(body.size)))
-    }
-    if (body.message) {
-        rows.push(row("문의 내용", escapeHtml(body.message).replace(/\n/g, "<br>")))
-    }
+    if (isJoin && body.region) rows.push(row("지역", escapeHtml(body.region)))
+    if (!isJoin && body.company) rows.push(row("회사명", escapeHtml(body.company)))
+    if (!isJoin && body.size) rows.push(row("기업 규모", escapeHtml(body.size)))
+    if (body.message) rows.push(row("문의 내용", escapeHtml(body.message).replace(/\n/g, "<br>")))
+    rows.push(row("출처", escapeHtml(sourceLabel)))
 
     const now = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })
 

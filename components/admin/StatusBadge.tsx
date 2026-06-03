@@ -1,89 +1,54 @@
-import * as React from "react"
+"use client"
 
-export type SubmissionStatus = "new" | "contacted" | "completed" | "declined"
+// ════════════════════════════════════════════════
+// StatusBadge — 처리 상태 표시 칩
+// ════════════════════════════════════════════════
 
-const STATUS_STYLES: Record<
-    SubmissionStatus,
-    { label: string; bg: string; color: string; border: string; dot: string }
-> = {
-    new: {
-        label: "신규",
-        bg: "#E6EEFF",
-        color: "#0046C0",
-        border: "#C5D5F5",
-        dot: "#0066FF",
-    },
-    contacted: {
-        label: "연락중",
-        bg: "#FFF4DA",
-        color: "#9A5C00",
-        border: "#FBD89A",
-        dot: "#F59E0B",
-    },
-    completed: {
-        label: "완료",
-        bg: "#DFFAEE",
-        color: "#066E47",
-        border: "#A6E8C9",
-        dot: "#00A878",
-    },
-    declined: {
-        label: "거절",
-        bg: "#F4F5F8",
-        color: "#5A6A8A",
-        border: "#E0E4ED",
-        dot: "#8A95AD",
-    },
+interface StatusBadgeProps {
+    status: string
+    size?: "sm" | "md"
 }
 
-export default function StatusBadge({
-    status,
-    size = "md",
-}: {
-    status: SubmissionStatus
-    size?: "sm" | "md"
-}) {
-    const s = STATUS_STYLES[status]
-    const isSm = size === "sm"
+const STATUS_CONFIG = {
+    new:       { label: "신규",   bg: "#EEF5FF", color: "#0046C0", dot: "#0066FF" },
+    contacted: { label: "연락중", bg: "#FFF8E6", color: "#92600A", dot: "#F59E0B" },
+    completed: { label: "완료",   bg: "#EDFAF5", color: "#0A6B45", dot: "#10B981" },
+    declined:  { label: "거절",   bg: "#FFF0F0", color: "#991B1B", dot: "#EF4444" },
+} as const
+
+export default function StatusBadge({ status, size = "md" }: StatusBadgeProps) {
+    const cfg = STATUS_CONFIG[status as keyof typeof STATUS_CONFIG] ?? {
+        label: status, bg: "#F3F4F6", color: "#374151", dot: "#9CA3AF",
+    }
+    const fontSize = size === "sm" ? 11 : 12
+    const padding = size === "sm" ? "3px 8px" : "4px 10px"
+
     return (
         <span
             style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 6,
-                background: s.bg,
-                color: s.color,
-                border: `1px solid ${s.border}`,
-                padding: isSm ? "2px 8px" : "4px 10px",
+                gap: 5,
+                background: cfg.bg,
+                color: cfg.color,
                 borderRadius: 100,
-                fontSize: isSm ? 11 : 12,
-                fontWeight: 500,
-                letterSpacing: -0.1,
+                fontSize,
+                fontWeight: 600,
+                padding,
+                letterSpacing: 0.2,
                 whiteSpace: "nowrap",
-                lineHeight: 1.4,
             }}
         >
             <span
                 style={{
-                    width: 6,
-                    height: 6,
+                    width: 5,
+                    height: 5,
                     borderRadius: "50%",
-                    background: s.dot,
-                    display: "inline-block",
+                    background: cfg.dot,
+                    flexShrink: 0,
                 }}
             />
-            {s.label}
+            {cfg.label}
         </span>
     )
-}
-
-export const STATUS_OPTIONS: SubmissionStatus[] = [
-    "new",
-    "contacted",
-    "completed",
-    "declined",
-]
-
-export function getStatusLabel(status: SubmissionStatus): string {
-    return STATUS_STYLES[status].label
 }

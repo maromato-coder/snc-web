@@ -1,74 +1,87 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { createClient } from "@/lib/supabase/server-auth"
-import { redirect } from "next/navigation"
-import SubmissionsTable from "@/components/admin/SubmissionsTable"
-import { Submission } from "@/components/admin/SubmissionPanel"
+"use client"
 
-export default async function SubmissionsPage() {
-    const authClient = await createClient()
-    const {
-        data: { user },
-    } = await authClient.auth.getUser()
-    if (!user) redirect("/admin/login")
+import { useState, useEffect, useCallback } from "react"
+import SubmissionsTable, { type Submission } from "@/components/admin/SubmissionsTable"
+import SubmissionPanel from "@/components/admin/SubmissionPanel"
 
-    const supabase = createServerSupabaseClient()
-    const { data, error } = await supabase
-        .from("submissions")
-        .select("*")
-        .order("created_at", { ascending: false })
+// ════════════════════════════════════════════════
+// 신청 관리 페이지
+// ════════════════════════════════════════════════
 
-    if (error) {
-        return (
-            <div style={{ padding: "32px 40px" }}>
-                <h1 style={{ color: "#DC2626" }}>로딩 실패</h1>
-                <pre style={{ background: "#FEF2F2", padding: 16, borderRadius: 8 }}>
-                    {error.message}
-                </pre>
-            </div>
-        )
+export default function SubmissionsPage() {
+    const [submissions, setSubmissions] = useState<Submission[]>([])
+    const [loading, setLoading] = useState(true)
+    const [selected, setSelected] = useState<Submission | null>(null)
+
+    const load = useCallback(async () => {
+        setLoading(true)
+        try {
+            // Supabase 직접 호출 대신 /api 경유 (RLS 인증 처리)
+            // admin layout에서 이미 인증 확인됨 — 여기서는 브라우저에서 anon key로 조회
+            const res = await fetch("/api/submissions")
+            if (res.ok) {
+                const json = await res.json()
+                setSubmissions(json.submissions || [])
+            }
+        } catch (err) {
+            console.error("Failed to load submissions:", err)
+        } finally {
+            setLoading(false)
+        }
+    }, [])
+
+    useEffect(() => {
+        load()
+    }, [load])
+
+    const handleUpdated = (updated: Submission) => {
+        setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)))
+        setSelected(updated)
     }
 
-    const submissions = (data || []) as Submission[]
-
     return (
-        <div style={{ padding: "32px 40px" }}>
-            {/* Page header */}
+        <div style={{ padding: "32px 36px" }}>
+            {/* 페이지 헤더 */}
             <div style={{ marginBottom: 24 }}>
-                <div
-                    style={{
-                        fontSize: 11.5,
-                        color: "#0046C0",
-                        letterSpacing: 1.5,
-                        fontWeight: 500,
-                        marginBottom: 6,
-                        fontFamily: "'Inter', sans-serif",
-                    }}
-                >
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#0066FF", letterSpacing: 1.5, marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
                     SUBMISSIONS
                 </div>
-                <h1
-                    style={{
-                        fontSize: 28,
-                        fontWeight: 500,
-                        color: "#0A1733",
-                        margin: 0,
-                        letterSpacing: -0.8,
-                    }}
-                >
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#0A1733", margin: 0, letterSpacing: -0.4 }}>
                     신청 관리
                 </h1>
-                <p
-                    style={{
-                        fontSize: 14,
-                        color: "#5A6A8A",
-                        margin: "6px 0 0",
-                    }}
-                >
-                    LP-A 가맹 · LP-B 기업 진단 모든 신청을 한 곳에서 관리합니다.
+                <p style={{ fontSize: 13, color: "#5A6A8A", margin: "6px 0 0" }}>
+                    모든 사이트의 신청·문의를 한 곳에서 관리합니다
                 </p>
             </div>
 
-            <SubmissionsTable initialSubmissions={submissions} />
+            {loading ? (
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: 80,
+                        color: "#8A9AB8",
+                        fontSize: 13,
+                    }}
+                >
+                    <span>불러오는 중...</span>
+                </div>
+            ) : (
+                <SubmissionsTable
+                    submissions={submissions}
+                    onSelect={setSelected}
+                    selectedId={selected?.id}
+                />
+            )}
+
+            {selected && (
+                <SubmissionPanel
+                    submission={selected}
+                    onClose={() => setSelected(null)}
+                    onUpdated={handleUpdated}
+                />
+            )}
         </div>
     )
 }

@@ -1,233 +1,217 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { createClient } from "@/lib/supabase/server-auth"
-import { redirect } from "next/navigation"
-import Link from "next/link"
 import StatCard from "@/components/admin/StatCard"
-import StatusBadge, { SubmissionStatus } from "@/components/admin/StatusBadge"
+import StatusBadge from "@/components/admin/StatusBadge"
+import Link from "next/link"
 
-export default async function DashboardPage() {
-    const authClient = await createClient()
-    const {
-        data: { user },
-    } = await authClient.auth.getUser()
-    if (!user) redirect("/admin/login")
+// ════════════════════════════════════════════════
+// 관리자 대시보드
+// ════════════════════════════════════════════════
 
-    // service_role 클라이언트로 통계·최근 신청 조회 (RLS 우회 안전)
+export const dynamic = "force-dynamic"
+
+export default async function AdminDashboard() {
     const supabase = createServerSupabaseClient()
 
-    const [{ count: newCount }, { count: contactedCount }, { count: completedCount }, { count: declinedCount }, { data: recent }] = await Promise.all([
-        supabase.from("submissions").select("*", { count: "exact", head: true }).eq("status", "new"),
-        supabase.from("submissions").select("*", { count: "exact", head: true }).eq("status", "contacted"),
-        supabase.from("submissions").select("*", { count: "exact", head: true }).eq("status", "completed"),
-        supabase.from("submissions").select("*", { count: "exact", head: true }).eq("status", "declined"),
-        supabase.from("submissions").select("*").order("created_at", { ascending: false }).limit(8),
+    // 통계 + 최근 8건 병렬 조회
+    const [{ data: all }, { data: recent }] = await Promise.all([
+        supabase.from("submissions").select("status"),
+        supabase
+            .from("submissions")
+            .select("id, type, name, phone, company, region, status, site_id, channel, created_at")
+            .order("created_at", { ascending: false })
+            .limit(8),
     ])
 
-    const recentSubs = (recent || []) as Array<{
-        id: string
-        type: "join" | "enterprise"
-        name: string
-        phone: string
-        company: string | null
-        region: string | null
-        status: SubmissionStatus
-        created_at: string
-    }>
+    const counts = {
+        new:       (all || []).filter((r) => r.status === "new").length,
+        contacted: (all || []).filter((r) => r.status === "contacted").length,
+        completed: (all || []).filter((r) => r.status === "completed").length,
+        declined:  (all || []).filter((r) => r.status === "declined").length,
+    }
+    const total = (all || []).length
 
-    const total = (newCount || 0) + (contactedCount || 0) + (completedCount || 0) + (declinedCount || 0)
+    const SITE_LABEL: Record<string, string> = { "snc-main": "SNC 메인" }
+    const TYPE_LABEL: Record<string, string> = { join: "가맹", enterprise: "기업" }
 
     return (
-        <div style={{ padding: "32px 40px" }}>
-            {/* Page header */}
-            <div style={{ marginBottom: 32 }}>
-                <div
-                    style={{
-                        fontSize: 11.5,
-                        color: "#0046C0",
-                        letterSpacing: 1.5,
-                        fontWeight: 500,
-                        marginBottom: 6,
-                        fontFamily: "'Inter', sans-serif",
-                    }}
-                >
+        <div style={{ padding: "32px 36px", maxWidth: 960 }}>
+            {/* 페이지 헤더 */}
+            <div style={{ marginBottom: 28 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#0066FF", letterSpacing: 1.5, marginBottom: 6, fontFamily: "Inter, sans-serif" }}>
                     DASHBOARD
                 </div>
-                <h1
-                    style={{
-                        fontSize: 28,
-                        fontWeight: 500,
-                        color: "#0A1733",
-                        margin: 0,
-                        letterSpacing: -0.8,
-                    }}
-                >
-                    환영합니다 👋
+                <h1 style={{ fontSize: 22, fontWeight: 700, color: "#0A1733", margin: 0, letterSpacing: -0.4 }}>
+                    대시보드
                 </h1>
-                <p
-                    style={{
-                        fontSize: 14,
-                        color: "#5A6A8A",
-                        margin: "6px 0 0",
-                    }}
-                >
-                    오늘은 {new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" })}입니다.
+                <p style={{ fontSize: 13, color: "#5A6A8A", margin: "6px 0 0" }}>
+                    전체 신청 {total}건
                 </p>
             </div>
 
-            {/* Stats grid */}
+            {/* 통계 카드 */}
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-                    gap: 14,
-                    marginBottom: 36,
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: 12,
+                    marginBottom: 32,
                 }}
             >
                 <StatCard
-                    label="신규 신청"
-                    value={newCount || 0}
-                    color="blue"
-                    icon="inbox"
-                    sub={total ? `전체의 ${Math.round(((newCount || 0) / total) * 100)}%` : "처리 대기 중"}
+                    label="신규"
+                    count={counts.new}
+                    color="#0046C0"
+                    bg="#EEF5FF"
+                    icon={
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 5v14M5 12h14" />
+                        </svg>
+                    }
                 />
                 <StatCard
-                    label="연락 중"
-                    value={contactedCount || 0}
-                    color="amber"
-                    icon="phone"
-                    sub="진행 중인 건"
+                    label="연락중"
+                    count={counts.contacted}
+                    color="#92600A"
+                    bg="#FFF8E6"
+                    icon={
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                        </svg>
+                    }
                 />
                 <StatCard
                     label="완료"
-                    value={completedCount || 0}
-                    color="green"
-                    icon="check"
-                    sub="처리 완료된 건"
+                    count={counts.completed}
+                    color="#0A6B45"
+                    bg="#EDFAF5"
+                    icon={
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    }
                 />
                 <StatCard
                     label="거절"
-                    value={declinedCount || 0}
-                    color="gray"
-                    icon="x"
-                    sub="진행 불가 건"
+                    count={counts.declined}
+                    color="#991B1B"
+                    bg="#FFF0F0"
+                    icon={
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    }
                 />
             </div>
 
-            {/* Recent submissions */}
-            <section
-                style={{
-                    background: "#FFFFFF",
-                    border: "1px solid #E8ECF3",
-                    borderRadius: 14,
-                    overflow: "hidden",
-                }}
-            >
+            {/* 최근 신청 */}
+            <div>
                 <div
                     style={{
-                        padding: "18px 24px",
-                        borderBottom: "1px solid #F0F2F5",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
+                        marginBottom: 14,
                     }}
                 >
-                    <div>
-                        <h2
-                            style={{
-                                fontSize: 15,
-                                fontWeight: 500,
-                                color: "#0A1733",
-                                margin: 0,
-                                letterSpacing: -0.2,
-                            }}
-                        >
-                            최근 신청
-                        </h2>
-                        <div
-                            style={{
-                                fontSize: 12,
-                                color: "#8A95AD",
-                                marginTop: 2,
-                            }}
-                        >
-                            가장 최근 8건
-                        </div>
-                    </div>
+                    <h2 style={{ fontSize: 14, fontWeight: 700, color: "#0A1733", margin: 0 }}>
+                        최근 신청
+                    </h2>
                     <Link
                         href="/admin/submissions"
                         style={{
-                            fontSize: 12.5,
+                            fontSize: 12,
                             color: "#0066FF",
                             textDecoration: "none",
                             fontWeight: 500,
-                            padding: "6px 12px",
-                            borderRadius: 7,
-                            background: "#F0F4FB",
                         }}
                     >
                         전체 보기 →
                     </Link>
                 </div>
 
-                {recentSubs.length === 0 ? (
+                <div
+                    style={{
+                        background: "#FFFFFF",
+                        border: "1px solid #E2E8F2",
+                        borderRadius: 12,
+                        overflow: "hidden",
+                    }}
+                >
+                    {/* 헤더 */}
                     <div
                         style={{
-                            padding: "60px 24px",
-                            textAlign: "center",
-                            color: "#8A95AD",
-                            fontSize: 14,
+                            display: "grid",
+                            gridTemplateColumns: "90px 70px 1fr 110px 90px",
+                            padding: "10px 20px",
+                            background: "#F8FAFF",
+                            borderBottom: "1px solid #E2E8F2",
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: "#8A9AB8",
+                            letterSpacing: 0.5,
                         }}
                     >
-                        아직 신청이 없습니다.
+                        <div>신청일</div>
+                        <div>종류</div>
+                        <div>이름</div>
+                        <div>출처</div>
+                        <div>상태</div>
                     </div>
-                ) : (
-                    recentSubs.map((s) => (
-                        <Link
-                            key={s.id}
-                            href="/admin/submissions"
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "70px 1fr 1fr 100px 100px",
-                                padding: "14px 24px",
-                                borderBottom: "1px solid #F4F6FA",
-                                textDecoration: "none",
-                                color: "#0A1733",
-                                fontSize: 13.5,
-                                alignItems: "center",
-                            }}
-                        >
-                            <div>
-                                <span
+
+                    {!recent || recent.length === 0 ? (
+                        <div style={{ padding: "40px 20px", textAlign: "center", color: "#8A9AB8", fontSize: 13 }}>
+                            아직 신청이 없습니다
+                        </div>
+                    ) : (
+                        recent.map((s, i) => {
+                            const dateStr = new Date(s.created_at).toLocaleDateString("ko-KR", {
+                                month: "2-digit", day: "2-digit", timeZone: "Asia/Seoul",
+                            })
+                            const siteLabel = SITE_LABEL[s.site_id || "snc-main"] || "SNC 메인"
+                            return (
+                                <Link
+                                    key={s.id}
+                                    href="/admin/submissions"
                                     style={{
-                                        display: "inline-block",
-                                        padding: "2px 7px",
-                                        background: s.type === "join" ? "#FFF4DA" : "#E6EEFF",
-                                        color: s.type === "join" ? "#9A5C00" : "#0046C0",
-                                        borderRadius: 5,
-                                        fontSize: 10.5,
-                                        fontWeight: 500,
+                                        display: "grid",
+                                        gridTemplateColumns: "90px 70px 1fr 110px 90px",
+                                        padding: "12px 20px",
+                                        borderBottom: i < recent.length - 1 ? "1px solid #F0F2F8" : "none",
+                                        textDecoration: "none",
+                                        alignItems: "center",
+                                        transition: "background 0.1s",
                                     }}
                                 >
-                                    {s.type === "join" ? "가맹" : "기업"}
-                                </span>
-                            </div>
-                            <div style={{ fontWeight: 500 }}>{s.name}</div>
-                            <div style={{ color: "#5A6A8A", fontSize: 12.5 }}>
-                                {s.type === "enterprise" ? s.company || s.phone : s.region || s.phone}
-                            </div>
-                            <div>
-                                <StatusBadge status={s.status} size="sm" />
-                            </div>
-                            <div style={{ color: "#8A95AD", fontSize: 11.5, textAlign: "right" }}>
-                                {new Date(s.created_at).toLocaleDateString("ko-KR", {
-                                    month: "2-digit",
-                                    day: "2-digit",
-                                })}
-                            </div>
-                        </Link>
-                    ))
-                )}
-            </section>
+                                    <div style={{ fontSize: 12, color: "#8A9AB8" }}>{dateStr}</div>
+                                    <div>
+                                        <span
+                                            style={{
+                                                fontSize: 11,
+                                                fontWeight: 600,
+                                                background: s.type === "join" ? "#EEF5FF" : "#F0F2F8",
+                                                color: s.type === "join" ? "#0046C0" : "#374B6B",
+                                                borderRadius: 5,
+                                                padding: "2px 7px",
+                                            }}
+                                        >
+                                            {TYPE_LABEL[s.type] || s.type}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <div style={{ fontSize: 13, fontWeight: 600, color: "#0A1733" }}>{s.name}</div>
+                                        <div style={{ fontSize: 11, color: "#8A9AB8", marginTop: 1 }}>
+                                            {s.company || s.region || s.phone}
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: 11, color: "#374B6B", fontWeight: 500 }}>{siteLabel}</div>
+                                    <div><StatusBadge status={s.status} size="sm" /></div>
+                                </Link>
+                            )
+                        })
+                    )}
+                </div>
+            </div>
         </div>
     )
 }

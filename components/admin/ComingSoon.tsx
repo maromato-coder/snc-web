@@ -1,63 +1,48 @@
-import * as React from "react"
+// ════════════════════════════════════════════════
+// ComingSoon — Phase 5+ 예정 페이지 공통 컴포넌트
+// ════════════════════════════════════════════════
 
 interface ComingSoonProps {
+    eyebrow: string
     title: string
     description: string
     features: string[]
-    eyebrow: string
     icon: React.ReactNode
 }
 
-export default function ComingSoon({ title, description, features, eyebrow, icon }: ComingSoonProps) {
+export default function ComingSoon({ eyebrow, title, description, features, icon }: ComingSoonProps) {
     return (
-        <div style={{ padding: "32px 40px" }}>
-            <div style={{ marginBottom: 24 }}>
-                <div
-                    style={{
-                        fontSize: 11.5,
-                        color: "#0046C0",
-                        letterSpacing: 1.5,
-                        fontWeight: 500,
-                        marginBottom: 6,
-                        fontFamily: "'Inter', sans-serif",
-                    }}
-                >
-                    {eyebrow}
-                </div>
-                <h1
-                    style={{
-                        fontSize: 28,
-                        fontWeight: 500,
-                        color: "#0A1733",
-                        margin: 0,
-                        letterSpacing: -0.8,
-                    }}
-                >
-                    {title}
-                </h1>
-            </div>
-
+        <div
+            style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "calc(100vh - 80px)",
+                padding: 40,
+            }}
+        >
             <div
                 style={{
+                    maxWidth: 480,
+                    width: "100%",
                     background: "#FFFFFF",
-                    border: "1px solid #E8ECF3",
-                    borderRadius: 14,
-                    padding: "56px 40px",
+                    borderRadius: 16,
+                    padding: "44px 40px",
+                    boxShadow: "0 1px 4px rgba(10,23,51,0.06)",
+                    border: "1px solid #E2E8F2",
                     textAlign: "center",
-                    maxWidth: 600,
-                    margin: "0 auto",
                 }}
             >
                 <div
                     style={{
-                        width: 64,
-                        height: 64,
-                        background: "#F0F4FB",
-                        borderRadius: 16,
-                        display: "inline-flex",
+                        width: 56,
+                        height: 56,
+                        background: "#EEF5FF",
+                        borderRadius: 14,
+                        display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        marginBottom: 24,
+                        margin: "0 auto 20px",
                     }}
                 >
                     {icon}
@@ -65,38 +50,35 @@ export default function ComingSoon({ title, description, features, eyebrow, icon
 
                 <div
                     style={{
-                        fontSize: 11.5,
-                        color: "#F59E0B",
-                        background: "#FFF4DA",
-                        padding: "4px 12px",
-                        borderRadius: 100,
-                        display: "inline-block",
-                        marginBottom: 16,
-                        fontWeight: 500,
-                        letterSpacing: 0.5,
-                        fontFamily: "'Inter', sans-serif",
+                        fontSize: 11,
+                        fontWeight: 700,
+                        color: "#0066FF",
+                        letterSpacing: 1.5,
+                        marginBottom: 10,
+                        fontFamily: "Inter, sans-serif",
                     }}
                 >
-                    COMING SOON
+                    {eyebrow}
                 </div>
 
-                <h2
+                <h1
                     style={{
                         fontSize: 22,
-                        fontWeight: 500,
+                        fontWeight: 700,
                         color: "#0A1733",
                         margin: "0 0 12px",
-                        letterSpacing: -0.5,
+                        letterSpacing: -0.4,
                     }}
                 >
-                    {title} 기능 준비 중
-                </h2>
+                    {title}
+                </h1>
+
                 <p
                     style={{
                         fontSize: 14,
                         color: "#5A6A8A",
-                        margin: "0 0 32px",
-                        lineHeight: 1.6,
+                        lineHeight: 1.7,
+                        margin: "0 0 28px",
                     }}
                 >
                     {description}
@@ -105,66 +87,56 @@ export default function ComingSoon({ title, description, features, eyebrow, icon
                 <div
                     style={{
                         background: "#F8FAFF",
-                        border: "1px solid #EEF2F8",
+                        border: "1px solid #E2E8F2",
                         borderRadius: 10,
-                        padding: "20px 24px",
+                        padding: "16px 20px",
                         textAlign: "left",
                     }}
                 >
                     <div
                         style={{
                             fontSize: 11,
-                            color: "#8A95AD",
-                            letterSpacing: 1,
-                            fontWeight: 500,
-                            marginBottom: 12,
-                            fontFamily: "'Inter', sans-serif",
+                            fontWeight: 700,
+                            color: "#8A9AB8",
+                            letterSpacing: 0.8,
+                            marginBottom: 10,
                         }}
                     >
-                        예정 기능
+                        Phase 5 예정 기능
                     </div>
-                    <ul
-                        style={{
-                            margin: 0,
-                            padding: 0,
-                            listStyle: "none",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 8,
-                        }}
-                    >
-                        {features.map((f) => (
-                            <li
-                                key={f}
-                                style={{
-                                    fontSize: 13,
-                                    color: "#0A1733",
-                                    display: "flex",
-                                    gap: 10,
-                                    alignItems: "flex-start",
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        flexShrink: 0,
-                                        width: 16,
-                                        height: 16,
-                                        borderRadius: 4,
-                                        background: "#E6EEFF",
-                                        color: "#0066FF",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        fontSize: 10,
-                                        marginTop: 2,
-                                    }}
-                                >
-                                    ✓
-                                </span>
-                                <span>{f}</span>
-                            </li>
-                        ))}
-                    </ul>
+                    {features.map((f, i) => (
+                        <div
+                            key={i}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 8,
+                                padding: "5px 0",
+                                fontSize: 13,
+                                color: "#374B6B",
+                            }}
+                        >
+                            <span style={{ color: "#0066FF", fontSize: 11 }}>•</span>
+                            {f}
+                        </div>
+                    ))}
+                </div>
+
+                <div
+                    style={{
+                        marginTop: 24,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        background: "#FFF8E6",
+                        color: "#92600A",
+                        borderRadius: 100,
+                        padding: "6px 14px",
+                        fontSize: 11,
+                        fontWeight: 600,
+                    }}
+                >
+                    🚧 개발 예정
                 </div>
             </div>
         </div>

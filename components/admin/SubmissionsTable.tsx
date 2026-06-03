@@ -1,349 +1,307 @@
 "use client"
 
-import * as React from "react"
-import StatusBadge, { SubmissionStatus } from "./StatusBadge"
-import SubmissionPanel, { Submission } from "./SubmissionPanel"
+import { useState } from "react"
+import StatusBadge from "./StatusBadge"
 
-type FilterType = "all" | "join" | "enterprise"
-type FilterStatus = "all" | SubmissionStatus
+// ════════════════════════════════════════════════
+// SubmissionsTable — 신청 목록 + 검색/필터/CSV
+// ════════════════════════════════════════════════
 
-interface SubmissionsTableProps {
-    initialSubmissions: Submission[]
+export interface Submission {
+    id: string
+    type: "join" | "enterprise"
+    name: string
+    phone: string
+    company?: string | null
+    region?: string | null
+    size?: string | null
+    message?: string | null
+    status: "new" | "contacted" | "completed" | "declined"
+    admin_notes?: string | null
+    site_id?: string | null
+    channel?: string | null
+    created_at: string
+    updated_at?: string
 }
 
-export default function SubmissionsTable({ initialSubmissions }: SubmissionsTableProps) {
-    const [submissions, setSubmissions] = React.useState(initialSubmissions)
-    const [search, setSearch] = React.useState("")
-    const [filterType, setFilterType] = React.useState<FilterType>("all")
-    const [filterStatus, setFilterStatus] = React.useState<FilterStatus>("all")
-    const [selected, setSelected] = React.useState<Submission | null>(null)
+const TYPE_LABEL: Record<string, string> = {
+    join: "가맹",
+    enterprise: "기업",
+}
+const TYPE_COLOR: Record<string, { bg: string; color: string }> = {
+    join:       { bg: "#EEF5FF", color: "#0046C0" },
+    enterprise: { bg: "#F0F2F8", color: "#374B6B" },
+}
+const SITE_LABEL: Record<string, string> = {
+    "snc-main": "SNC 메인",
+}
+const CHANNEL_LABEL: Record<string, string> = {
+    form:   "폼",
+    email:  "메일",
+    survey: "설문",
+}
 
-    const filtered = React.useMemo(() => {
-        return submissions.filter((s) => {
-            if (filterType !== "all" && s.type !== filterType) return false
-            if (filterStatus !== "all" && s.status !== filterStatus) return false
-            if (search) {
-                const q = search.toLowerCase()
-                const haystack = `${s.name} ${s.phone} ${s.company || ""} ${s.region || ""} ${s.message || ""}`.toLowerCase()
-                if (!haystack.includes(q)) return false
-            }
-            return true
-        })
-    }, [submissions, search, filterType, filterStatus])
+interface Props {
+    submissions: Submission[]
+    onSelect: (s: Submission) => void
+    selectedId?: string
+}
 
-    const handleUpdate = (updated: Submission) => {
-        setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)))
-        setSelected(updated)
+export default function SubmissionsTable({ submissions, onSelect, selectedId }: Props) {
+    const [search, setSearch] = useState("")
+    const [filterType, setFilterType] = useState("all")
+    const [filterStatus, setFilterStatus] = useState("all")
+    const [filterSite, setFilterSite] = useState("all")
+
+    // 필터링
+    const filtered = submissions.filter((s) => {
+        const q = search.toLowerCase()
+        const matchSearch =
+            !q ||
+            s.name.toLowerCase().includes(q) ||
+            s.phone.includes(q) ||
+            (s.company || "").toLowerCase().includes(q)
+        const matchType = filterType === "all" || s.type === filterType
+        const matchStatus = filterStatus === "all" || s.status === filterStatus
+        const matchSite = filterSite === "all" || (s.site_id || "snc-main") === filterSite
+        return matchSearch && matchType && matchStatus && matchSite
+    })
+
+    // 사이트 목록 (동적)
+    const siteIds = [...new Set(submissions.map((s) => s.site_id || "snc-main"))]
+
+    const handleCsv = () => {
+        window.location.href = "/api/submissions/csv"
     }
 
-    const downloadCsv = () => {
-        // Get filtered IDs to send to CSV endpoint
-        const params = new URLSearchParams()
-        if (filterType !== "all") params.set("type", filterType)
-        if (filterStatus !== "all") params.set("status", filterStatus)
-        if (search) params.set("q", search)
-        window.location.href = `/api/submissions/csv?${params.toString()}`
+    const filterSelect: React.CSSProperties = {
+        background: "#FFFFFF",
+        border: "1px solid #E2E8F2",
+        borderRadius: 8,
+        padding: "7px 10px",
+        fontSize: 13,
+        color: "#374B6B",
+        cursor: "pointer",
+        outline: "none",
+        fontFamily: "inherit",
     }
 
     return (
-        <>
-            {/* Filter bar */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* 검색·필터 바 */}
             <div
                 style={{
-                    background: "#FFFFFF",
-                    border: "1px solid #E8ECF3",
-                    borderRadius: 12,
-                    padding: "12px 14px",
                     display: "flex",
                     gap: 8,
                     alignItems: "center",
-                    marginBottom: 16,
                     flexWrap: "wrap",
                 }}
             >
-                {/* Search */}
+                {/* 검색 */}
                 <div
                     style={{
-                        flex: "1 1 240px",
                         position: "relative",
-                        display: "flex",
-                        alignItems: "center",
+                        flex: "1 1 200px",
+                        minWidth: 180,
                     }}
                 >
                     <svg
-                        width="15"
-                        height="15"
+                        width="14"
+                        height="14"
                         viewBox="0 0 24 24"
                         fill="none"
-                        stroke="#8A95AD"
+                        stroke="#8A9AB8"
                         strokeWidth="2"
                         strokeLinecap="round"
-                        style={{ position: "absolute", left: 12 }}
+                        strokeLinejoin="round"
+                        style={{
+                            position: "absolute",
+                            left: 10,
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                        }}
                     >
-                        <circle cx="11" cy="11" r="7" />
+                        <circle cx="11" cy="11" r="8" />
                         <line x1="21" y1="21" x2="16.65" y2="16.65" />
                     </svg>
                     <input
                         type="text"
+                        placeholder="이름·연락처·회사명 검색"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder="이름, 전화, 회사로 검색..."
                         style={{
                             width: "100%",
-                            padding: "9px 12px 9px 34px",
-                            border: "1px solid #E8ECF3",
+                            paddingLeft: 30,
+                            paddingRight: 10,
+                            paddingTop: 7,
+                            paddingBottom: 7,
+                            border: "1px solid #E2E8F2",
                             borderRadius: 8,
-                            fontSize: 13.5,
+                            fontSize: 13,
                             color: "#0A1733",
-                            fontFamily: "inherit",
                             outline: "none",
+                            fontFamily: "inherit",
                             boxSizing: "border-box",
-                            background: "#FFFFFF",
                         }}
                     />
                 </div>
 
-                {/* Type filter */}
-                <FilterButtonGroup
-                    value={filterType}
-                    onChange={(v) => setFilterType(v as FilterType)}
-                    options={[
-                        { value: "all", label: "전체" },
-                        { value: "join", label: "가맹" },
-                        { value: "enterprise", label: "기업" },
-                    ]}
-                />
+                <select value={filterSite} onChange={(e) => setFilterSite(e.target.value)} style={filterSelect}>
+                    <option value="all">전체 사이트</option>
+                    {siteIds.map((s) => (
+                        <option key={s} value={s}>{SITE_LABEL[s] || s}</option>
+                    ))}
+                </select>
 
-                {/* Status filter */}
-                <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-                    style={{
-                        padding: "8px 12px",
-                        border: "1px solid #E8ECF3",
-                        borderRadius: 8,
-                        fontSize: 13.5,
-                        color: "#0A1733",
-                        fontFamily: "inherit",
-                        cursor: "pointer",
-                        background: "#FFFFFF",
-                        outline: "none",
-                    }}
-                >
-                    <option value="all">모든 상태</option>
+                <select value={filterType} onChange={(e) => setFilterType(e.target.value)} style={filterSelect}>
+                    <option value="all">전체 종류</option>
+                    <option value="join">가맹 신청</option>
+                    <option value="enterprise">기업 진단</option>
+                </select>
+
+                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} style={filterSelect}>
+                    <option value="all">전체 상태</option>
                     <option value="new">신규</option>
                     <option value="contacted">연락중</option>
                     <option value="completed">완료</option>
                     <option value="declined">거절</option>
                 </select>
 
-                {/* CSV download */}
-                <button
-                    onClick={downloadCsv}
-                    title="CSV 다운로드"
-                    style={{
-                        padding: "8px 14px",
-                        background: "#FFFFFF",
-                        border: "1px solid #E8ECF3",
-                        borderRadius: 8,
-                        fontSize: 13.5,
-                        color: "#5A6A8A",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 6,
-                        fontWeight: 500,
-                    }}
-                >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
-                        <polyline points="7 10 12 15 17 10" />
-                        <line x1="12" y1="15" x2="12" y2="3" />
-                    </svg>
-                    CSV
-                </button>
+                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 12, color: "#8A9AB8" }}>
+                        {filtered.length}건
+                    </span>
+                    <button
+                        onClick={handleCsv}
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 5,
+                            background: "#FFFFFF",
+                            border: "1px solid #E2E8F2",
+                            borderRadius: 8,
+                            padding: "7px 12px",
+                            fontSize: 12,
+                            color: "#374B6B",
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            fontWeight: 500,
+                        }}
+                    >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
+                        CSV
+                    </button>
+                </div>
             </div>
 
-            {/* Result count */}
-            <div style={{ fontSize: 12.5, color: "#8A95AD", marginBottom: 12, paddingLeft: 4 }}>
-                {filtered.length}개 결과 {submissions.length !== filtered.length && `· 전체 ${submissions.length}개`}
-            </div>
-
-            {/* Table */}
+            {/* 테이블 */}
             <div
                 style={{
                     background: "#FFFFFF",
-                    border: "1px solid #E8ECF3",
+                    border: "1px solid #E2E8F2",
                     borderRadius: 12,
                     overflow: "hidden",
                 }}
             >
-                {/* Header */}
+                {/* 헤더 */}
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "80px 1fr 140px 1fr 110px 130px",
-                        padding: "12px 20px",
+                        gridTemplateColumns: "100px 80px 1fr 130px 110px 90px",
+                        padding: "10px 20px",
                         background: "#F8FAFF",
-                        borderBottom: "1px solid #E8ECF3",
-                        fontSize: 11.5,
-                        color: "#5A6A8A",
-                        fontWeight: 500,
+                        borderBottom: "1px solid #E2E8F2",
+                        fontSize: 11,
+                        fontWeight: 600,
+                        color: "#8A9AB8",
                         letterSpacing: 0.5,
-                        textTransform: "uppercase",
-                        fontFamily: "'Inter', sans-serif",
                     }}
                 >
+                    <div>신청일</div>
                     <div>종류</div>
-                    <div>이름</div>
-                    <div>연락처</div>
-                    <div>회사/지역</div>
+                    <div>이름 · 연락처</div>
+                    <div>출처</div>
+                    <div>회사·지역</div>
                     <div>상태</div>
-                    <div>등록일</div>
                 </div>
 
-                {/* Rows */}
+                {/* 행 */}
                 {filtered.length === 0 ? (
                     <div
                         style={{
-                            padding: "60px 20px",
+                            padding: "48px 20px",
                             textAlign: "center",
-                            color: "#8A95AD",
-                            fontSize: 14,
+                            color: "#8A9AB8",
+                            fontSize: 13,
                         }}
                     >
-                        조건에 맞는 신청이 없습니다.
+                        {submissions.length === 0 ? "아직 신청이 없습니다" : "검색 결과가 없습니다"}
                     </div>
                 ) : (
-                    filtered.map((s) => (
-                        <button
-                            key={s.id}
-                            onClick={() => setSelected(s)}
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: "80px 1fr 140px 1fr 110px 130px",
-                                padding: "16px 20px",
-                                width: "100%",
-                                background: selected?.id === s.id ? "#F0F4FB" : "#FFFFFF",
-                                border: "none",
-                                borderBottom: "1px solid #F0F2F5",
-                                cursor: "pointer",
-                                textAlign: "left",
-                                fontSize: 13.5,
-                                color: "#0A1733",
-                                fontFamily: "inherit",
-                                alignItems: "center",
-                                transition: "background 0.1s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                                if (selected?.id !== s.id) {
-                                    e.currentTarget.style.background = "#FAFBFD"
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                if (selected?.id !== s.id) {
-                                    e.currentTarget.style.background = "#FFFFFF"
-                                }
-                            }}
-                        >
-                            <div>
-                                <span
-                                    style={{
-                                        display: "inline-block",
-                                        padding: "2px 8px",
-                                        background: s.type === "join" ? "#FFF4DA" : "#E6EEFF",
-                                        color: s.type === "join" ? "#9A5C00" : "#0046C0",
-                                        borderRadius: 5,
-                                        fontSize: 11,
-                                        fontWeight: 500,
-                                    }}
-                                >
-                                    {s.type === "join" ? "가맹" : "기업"}
-                                </span>
+                    filtered.map((s, i) => {
+                        const isSelected = s.id === selectedId
+                        const typeCfg = TYPE_COLOR[s.type] ?? TYPE_COLOR.join
+                        const siteLabel = SITE_LABEL[s.site_id || "snc-main"] || s.site_id || "SNC 메인"
+                        const channelLabel = CHANNEL_LABEL[s.channel || "form"] || s.channel || "폼"
+                        const dateStr = new Date(s.created_at).toLocaleDateString("ko-KR", {
+                            month: "2-digit",
+                            day: "2-digit",
+                            timeZone: "Asia/Seoul",
+                        })
+
+                        return (
+                            <div
+                                key={s.id}
+                                onClick={() => onSelect(s)}
+                                style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "100px 80px 1fr 130px 110px 90px",
+                                    padding: "13px 20px",
+                                    borderBottom: i < filtered.length - 1 ? "1px solid #F0F2F8" : "none",
+                                    cursor: "pointer",
+                                    background: isSelected ? "#F0F6FF" : "transparent",
+                                    alignItems: "center",
+                                    transition: "background 0.1s",
+                                }}
+                            >
+                                <div style={{ fontSize: 12, color: "#8A9AB8" }}>{dateStr}</div>
+                                <div>
+                                    <span
+                                        style={{
+                                            fontSize: 11,
+                                            fontWeight: 600,
+                                            background: typeCfg.bg,
+                                            color: typeCfg.color,
+                                            borderRadius: 5,
+                                            padding: "2px 7px",
+                                        }}
+                                    >
+                                        {TYPE_LABEL[s.type]}
+                                    </span>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: "#0A1733" }}>{s.name}</div>
+                                    <div style={{ fontSize: 12, color: "#5A6A8A", marginTop: 1 }}>{s.phone}</div>
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: 11, fontWeight: 600, color: "#374B6B" }}>{siteLabel}</div>
+                                    <div style={{ fontSize: 11, color: "#8A9AB8", marginTop: 1 }}>{channelLabel}</div>
+                                </div>
+                                <div style={{ fontSize: 12, color: "#5A6A8A", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                    {s.company || s.region || "—"}
+                                </div>
+                                <div>
+                                    <StatusBadge status={s.status} size="sm" />
+                                </div>
                             </div>
-                            <div style={{ fontWeight: 500 }}>{s.name}</div>
-                            <div style={{ color: "#5A6A8A", fontVariantNumeric: "tabular-nums", fontSize: 12.5 }}>
-                                {s.phone}
-                            </div>
-                            <div style={{ color: "#5A6A8A", fontSize: 12.5, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", paddingRight: 12 }}>
-                                {s.type === "enterprise" ? s.company || "—" : s.region || "—"}
-                            </div>
-                            <div>
-                                <StatusBadge status={s.status} size="sm" />
-                            </div>
-                            <div style={{ color: "#8A95AD", fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
-                                {formatShort(s.created_at)}
-                            </div>
-                        </button>
-                    ))
+                        )
+                    })
                 )}
             </div>
-
-            {/* Slide-over panel */}
-            <SubmissionPanel
-                submission={selected}
-                onClose={() => setSelected(null)}
-                onUpdate={handleUpdate}
-            />
-        </>
-    )
-}
-
-function FilterButtonGroup({
-    value,
-    onChange,
-    options,
-}: {
-    value: string
-    onChange: (v: string) => void
-    options: { value: string; label: string }[]
-}) {
-    return (
-        <div
-            style={{
-                display: "inline-flex",
-                background: "#F8FAFF",
-                border: "1px solid #E8ECF3",
-                borderRadius: 8,
-                padding: 2,
-            }}
-        >
-            {options.map((opt) => (
-                <button
-                    key={opt.value}
-                    onClick={() => onChange(opt.value)}
-                    style={{
-                        padding: "6px 12px",
-                        background: value === opt.value ? "#FFFFFF" : "transparent",
-                        border: "none",
-                        borderRadius: 6,
-                        fontSize: 13,
-                        color: value === opt.value ? "#0A1733" : "#5A6A8A",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        fontWeight: value === opt.value ? 500 : 400,
-                        boxShadow: value === opt.value ? "0 1px 2px rgba(10, 23, 51, 0.06)" : "none",
-                    }}
-                >
-                    {opt.label}
-                </button>
-            ))}
         </div>
     )
-}
-
-function formatShort(iso: string): string {
-    const d = new Date(iso)
-    const now = new Date()
-    const diffMs = now.getTime() - d.getTime()
-    const diffHr = diffMs / (1000 * 60 * 60)
-
-    if (diffHr < 1) {
-        const m = Math.floor(diffMs / (1000 * 60))
-        return m <= 0 ? "방금" : `${m}분 전`
-    }
-    if (diffHr < 24) return `${Math.floor(diffHr)}시간 전`
-    if (diffHr < 24 * 7) return `${Math.floor(diffHr / 24)}일 전`
-    return d.toLocaleDateString("ko-KR", { month: "2-digit", day: "2-digit" })
 }

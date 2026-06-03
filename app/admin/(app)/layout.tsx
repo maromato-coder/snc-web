@@ -2,17 +2,12 @@ import { createClient } from "@/lib/supabase/server-auth"
 import { redirect } from "next/navigation"
 import Sidebar from "@/components/admin/Sidebar"
 
-export const metadata = {
-    title: "SNC 운영 콘솔",
-}
+// ════════════════════════════════════════════════
+// admin/(app)/layout.tsx
+// 인증 확인 + 사이드바 레이아웃
+// ════════════════════════════════════════════════
 
-/**
- * /admin/(app) 그룹용 레이아웃 — 사이드바 셸 + 인증 가드
- *
- * /admin/login은 이 레이아웃을 거치지 않습니다 ((app) 그룹 밖에 있어서).
- * 그래서 무한 리다이렉트 루프가 발생하지 않습니다.
- */
-export default async function AdminLayout({
+export default async function AdminAppLayout({
     children,
 }: {
     children: React.ReactNode
@@ -35,14 +30,8 @@ export default async function AdminLayout({
                 fontFamily: "'Pretendard Variable', 'Inter', sans-serif",
             }}
         >
-            <Sidebar userEmail={user.email || ""} />
-            <main
-                style={{
-                    flex: 1,
-                    overflow: "auto",
-                    minWidth: 0,
-                }}
-            >
+            <Sidebar userEmail={user.email ?? ""} />
+            <main style={{ flex: 1, minWidth: 0, overflowX: "auto" }}>
                 {children}
             </main>
         </div>
