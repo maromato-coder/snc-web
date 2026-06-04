@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
 const ALLOWED_DOMAIN = "sncpc.com"
+const ALLOWED_EMAILS = ["maromato@gmail.com"]
 
 /**
  * Google OAuth 콜백 핸들러
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 도메인 검증 (Google "Internal" 설정으로 1차 차단되지만, 한 번 더)
-    if (!data.user.email?.endsWith(`@${ALLOWED_DOMAIN}`)) {
+    if (!data.user.email?.endsWith(`@${ALLOWED_DOMAIN}`) && !ALLOWED_EMAILS.includes(data.user.email || "")) {
         await supabase.auth.signOut()
         return NextResponse.redirect(
             `${origin}/admin/login?error=unauthorized_domain`

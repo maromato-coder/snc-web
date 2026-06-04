@@ -30,8 +30,6 @@ export default function AdminLogin() {
                 queryParams: {
                     access_type: "offline",
                     prompt: "consent",
-                    // Google에 @sncpc.com 도메인 힌트 전달
-                    hd: "sncpc.com",
                 },
             },
         })
