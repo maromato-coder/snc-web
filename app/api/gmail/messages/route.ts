@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server-auth"
+import { isAdminEmail } from "@/lib/auth-check"
 
 // ════════════════════════════════════════════════
 // GET /api/gmail/messages
@@ -57,7 +58,7 @@ export async function GET(req: NextRequest) {
     try {
         const authClient = await createClient()
         const { data: { user } } = await authClient.auth.getUser()
-        if (!user?.email?.endsWith("@sncpc.com")) {
+        if (!isAdminEmail(user?.email)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 

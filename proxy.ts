@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server"
 import { createServerClient } from "@supabase/ssr"
 
 const ALLOWED_DOMAIN = "sncpc.com"
+const ALLOWED_EMAILS = ["maromato@gmail.com"] // 관리자 개인 계정 예외
 
 /**
  * /admin 경로 보호 프록시 (Next.js 16 proxy 방식)
@@ -50,7 +51,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
-    if (!user.email?.endsWith(`@${ALLOWED_DOMAIN}`)) {
+    if (!user.email?.endsWith(`@${ALLOWED_DOMAIN}`) && !ALLOWED_EMAILS.includes(user.email || "")) {
         await supabase.auth.signOut()
         const url = request.nextUrl.clone()
         url.pathname = "/admin/login"

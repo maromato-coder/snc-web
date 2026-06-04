@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server-auth"
+import { isAdminEmail } from "@/lib/auth-check"
 
 // ════════════════════════════════════════════════
 // GET  /api/submissions/[id]/notes  — 메모 목록 조회
@@ -14,7 +15,7 @@ export async function GET(
     try {
         const authClient = await createClient()
         const { data: { user } } = await authClient.auth.getUser()
-        if (!user?.email?.endsWith("@sncpc.com")) {
+        if (!isAdminEmail(user?.email)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
@@ -45,7 +46,7 @@ export async function POST(
     try {
         const authClient = await createClient()
         const { data: { user } } = await authClient.auth.getUser()
-        if (!user?.email?.endsWith("@sncpc.com")) {
+        if (!isAdminEmail(user?.email)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
@@ -62,7 +63,7 @@ export async function POST(
             .from("submission_notes")
             .insert({
                 submission_id: id,
-                author_email: user.email!,
+                author_email: user!.email!,
                 content,
             })
             .select()

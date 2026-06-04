@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server-auth"
+import { isAdminEmail } from "@/lib/auth-check"
 
 // ════════════════════════════════════════════════
 // GET /api/gmail/auth
@@ -15,7 +16,7 @@ export async function GET() {
     // 관리자 인증 확인
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user?.email?.endsWith("@sncpc.com")) {
+    if (!isAdminEmail(user?.email)) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

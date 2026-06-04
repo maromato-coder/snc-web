@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server-auth"
+import { isAdminEmail } from "@/lib/auth-check"
 
 // ════════════════════════════════════════════════
 // GET  /api/sender-accounts — 목록 조회
@@ -11,7 +12,7 @@ export async function GET() {
     try {
         const authClient = await createClient()
         const { data: { user } } = await authClient.auth.getUser()
-        if (!user?.email?.endsWith("@sncpc.com")) {
+        if (!isAdminEmail(user?.email)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     try {
         const authClient = await createClient()
         const { data: { user } } = await authClient.auth.getUser()
-        if (!user?.email?.endsWith("@sncpc.com")) {
+        if (!isAdminEmail(user?.email)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
         const supabase = createServerSupabaseClient()
         const { data, error } = await supabase
             .from("sender_accounts")
-            .insert({ email: email.trim(), display_name: display_name.trim(), created_by: user.email! })
+            .insert({ email: email.trim(), display_name: display_name.trim(), created_by: user!.email! })
             .select().single()
 
         if (error) {
@@ -66,7 +67,7 @@ export async function PATCH(req: NextRequest) {
     try {
         const authClient = await createClient()
         const { data: { user } } = await authClient.auth.getUser()
-        if (!user?.email?.endsWith("@sncpc.com")) {
+        if (!isAdminEmail(user?.email)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 

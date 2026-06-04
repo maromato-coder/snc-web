@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { Resend } from "resend"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server-auth"
+import { isAdminEmail } from "@/lib/auth-check"
 
 // ════════════════════════════════════════════════
 // POST /api/submissions/[id]/reply
@@ -18,7 +19,7 @@ export async function POST(
     try {
         const authClient = await createClient()
         const { data: { user } } = await authClient.auth.getUser()
-        if (!user?.email?.endsWith("@sncpc.com")) {
+        if (!isAdminEmail(user?.email)) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
@@ -73,7 +74,7 @@ export async function POST(
         // submission_notes에 자동 기록
         await supabase.from("submission_notes").insert({
             submission_id: id,
-            author_email:  user.email!,
+            author_email:  user!.email!,
             content:       noteContent,
         })
 
@@ -84,7 +85,7 @@ export async function POST(
             to_email,
             subject,
             body:          emailBody,
-            sent_by:       user.email!,
+            sent_by:       user!.email!,
             sent_at:       now,
         })
 
