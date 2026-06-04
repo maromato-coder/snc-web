@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { verifyIntegrationKey, integrationUnauthorized } from "@/lib/integration-auth"
+import {
+    createEmailAccountRequest,
+    listEmailAccountRequests,
+    mapRequestForIntegration,
+    validateEmailRequestInput,
+} from "@/lib/email-account-requests"
 
-// ════════════════════════════════════════════════
-// GET /api/integration/email-requests
-// as_center에서 이메일 계정 신청 목록 조회
-// ════════════════════════════════════════════════
+// GET  /api/integration/email-requests — 목록
+// POST /api/integration/email-requests — 업무앱 신청 생성
 
 export async function GET(req: NextRequest) {
     if (!verifyIntegrationKey(req)) return integrationUnauthorized()
@@ -13,21 +16,45 @@ export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url)
         const status = searchParams.get("status") || "all"
-
-        const supabase = createServerSupabaseClient()
-        let query = supabase
-            .from("email_account_requests")
-            .select("id, requester_name, requester_email, requested_email, department, status, issued_at, created_at")
-            .order("created_at", { ascending: false })
-
-        if (status !== "all") query = query.eq("status", status)
-
-        const { data, error } = await query
-        if (error) return NextResponse.json({ error: "조회 실패" }, { status: 500 })
-
-        return NextResponse.json({ requests: data })
+        const rows = await listEmailAccountRequests(status)
+        return NextResponse.json({
+            requests: rows.map(mapRequestForIntegration),
+        })
     } catch (err) {
         console.error("[GET integration email-requests]", err)
+        return NextResponse.json({ error: "조회 실패" }, { status: 500 })
+    }
+}
+
+export async function POST(req: NextRequest) {
+    if (!verifyIntegrationKey(req)) return integrationUnauthorized()
+
+    try {
+        const body = await req.json()
+        const validated = validateEmailRequestInput(body)
+        if ("error" in validated) {
+            return NextResponse.json({ error: validated.error }, { status: validated.status })
+        }
+
+        const result = await createEmailAccountRequest({
+            ...validated,
+            department: body.department,
+            purpose: body.purpose,
+            as_center_user_id:
+                body.as_center_user_id != null ? Number(body.as_center_user_id) : undefined,
+            company_id: body.company_id != null ? Number(body.company_id) : undefined,
+            sendNotifications: true,
+        })
+
+        if ("error" in result) {
+            return NextResponse.json({ error: result.error }, { status: result.status })
+        }
+
+        return NextResponse.json({
+            request: mapRequestForIntegration(result.request),
+        })
+    } catch (err) {
+        console.error("[POST integration email-requests]", err)
         return NextResponse.json({ error: "서버 오류" }, { status: 500 })
     }
 }

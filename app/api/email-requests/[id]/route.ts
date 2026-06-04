@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server-auth"
 import { isAdminEmail } from "@/lib/auth-check"
-import { Resend } from "resend"
+import { getResendClient } from "@/lib/resend-client"
 
 // ════════════════════════════════════════════════
 // PATCH /api/email-requests/[id]
 // 신청 상태 변경 (승인/발급완료/거절)
 // ════════════════════════════════════════════════
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function PATCH(
     req: NextRequest,
@@ -62,7 +60,8 @@ export async function PATCH(
         }
 
         // 신청자에게 결과 메일
-        if ((status === "issued" || status === "rejected") && data.requester_email) {
+        const resend = getResendClient()
+        if (resend && (status === "issued" || status === "rejected") && data.requester_email) {
             try {
                 const isIssued = status === "issued"
                 await resend.emails.send({

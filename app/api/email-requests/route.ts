@@ -2,14 +2,12 @@ import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server-auth"
 import { isAdminEmail } from "@/lib/auth-check"
-import { Resend } from "resend"
+import { getResendClient } from "@/lib/resend-client"
 
 // ════════════════════════════════════════════════
 // GET  /api/email-requests — 신청 목록 조회 (관리자)
 // POST /api/email-requests — 신규 신청 (누구나)
 // ════════════════════════════════════════════════
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function GET(req: NextRequest) {
     try {
@@ -99,8 +97,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "저장 실패" }, { status: 500 })
         }
 
-        // 신청자에게 접수 확인 메일
-        try {
+        const resend = getResendClient()
+        if (resend) try {
             await resend.emails.send({
                 from: "SNC <noreply@sncpc.com>",
                 to: [requester_email],
@@ -126,8 +124,7 @@ export async function POST(req: NextRequest) {
             console.error("[POST email-requests] 신청자 메일 실패:", mailErr)
         }
 
-        // 관리자에게 알림 메일
-        try {
+        if (resend) try {
             await resend.emails.send({
                 from: "SNC 알림 <noreply@sncpc.com>",
                 to: [process.env.RECIPIENT_EMAIL || "maromato@gmail.com"],

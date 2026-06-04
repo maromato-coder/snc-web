@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { Resend } from "resend"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { getResendClient } from "@/lib/resend-client"
 
 // ════════════════════════════════════════════════
 // POST /api/contact
@@ -109,7 +107,8 @@ export async function POST(req: NextRequest) {
         }
 
         // ──────── 3. 메일 알림 (실패해도 응답은 성공) ────────
-        try {
+        const resend = getResendClient()
+        if (resend) try {
             const isJoin = body.type === "join"
             const typeLabel = isJoin ? "가맹 신청" : "기업 진단 신청"
             const subjectName = isJoin

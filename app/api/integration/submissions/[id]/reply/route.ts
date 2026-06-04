@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { verifyIntegrationKey, integrationUnauthorized } from "@/lib/integration-auth"
-import { Resend } from "resend"
+import { getResendClient } from "@/lib/resend-client"
 
 // ════════════════════════════════════════════════
 // POST /api/integration/submissions/[id]/reply
 // as_center에서 폼메일 신청자에게 답장
 // ════════════════════════════════════════════════
-
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(
     req: NextRequest,
@@ -37,7 +35,11 @@ export async function POST(
             return NextResponse.json({ error: "유효하지 않은 발신 계정" }, { status: 400 })
         }
 
-        // Resend 발송
+        const resend = getResendClient()
+        if (!resend) {
+            return NextResponse.json({ error: "메일 발송 설정(RESEND_API_KEY)이 없습니다" }, { status: 503 })
+        }
+
         const { error: sendError } = await resend.emails.send({
             from: `${sender.display_name} <${sender.email}>`,
             to: [to_email],

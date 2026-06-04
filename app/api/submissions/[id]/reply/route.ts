@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { Resend } from "resend"
+import { getResendClient } from "@/lib/resend-client"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createClient } from "@/lib/supabase/server-auth"
 import { isAdminEmail } from "@/lib/auth-check"
@@ -10,7 +10,6 @@ import { isAdminEmail } from "@/lib/auth-check"
 // 발송 내역 → submission_notes + reply_logs 자동 기록
 // ════════════════════════════════════════════════
 
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(
     req: NextRequest,
@@ -45,7 +44,11 @@ export async function POST(
             return NextResponse.json({ error: "유효하지 않은 발신 계정입니다" }, { status: 400 })
         }
 
-        // Resend로 발송
+        const resend = getResendClient()
+        if (!resend) {
+            return NextResponse.json({ error: "메일 발송 설정(RESEND_API_KEY)이 없습니다" }, { status: 503 })
+        }
+
         const { error: sendError } = await resend.emails.send({
             from:    `${sender.display_name} <${sender.email}>`,
             to:      [to_email],
