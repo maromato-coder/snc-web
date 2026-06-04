@@ -30,7 +30,15 @@ export async function POST(req: NextRequest) {
     if (!verifyIntegrationKey(req)) return integrationUnauthorized()
 
     try {
-        const body = await req.json()
+        let body: Record<string, unknown>
+        try {
+            body = await req.json()
+        } catch {
+            return NextResponse.json(
+                { error: "JSON 형식이 올바르지 않습니다. PowerShell은 Invoke-RestMethod 또는 body 파일을 사용하세요." },
+                { status: 400 }
+            )
+        }
         const validated = validateEmailRequestInput(body)
         if ("error" in validated) {
             return NextResponse.json({ error: validated.error }, { status: validated.status })
