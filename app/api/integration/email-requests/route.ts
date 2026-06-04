@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
 
         const result = await createEmailAccountRequest({
             ...validated,
-            department: body.department,
-            purpose: body.purpose,
+            department: body.department != null ? String(body.department) : undefined,
+            purpose: body.purpose != null ? String(body.purpose) : undefined,
             as_center_user_id:
                 body.as_center_user_id != null ? Number(body.as_center_user_id) : undefined,
             company_id: body.company_id != null ? Number(body.company_id) : undefined,

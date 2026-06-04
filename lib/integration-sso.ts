@@ -4,7 +4,7 @@ import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
-import { isAdminEmail } from "@/lib/auth-check"
+import { isAdminEmail, isAsCenterSsoRole } from "@/lib/auth-check"
 
 const TTL_SEC = 60
 
@@ -25,18 +25,58 @@ function ssoSecret(): string {
     return key
 }
 
+function normalizeEmail(v: unknown): string {
+    return String(v || "").trim().toLowerCase()
+}
+
+/** Integration API(업무앱 서버) 전용 — Supabase 로그인에 쓸 이메일 결정 */
+export function resolveIntegrationSsoEmail(body: {
+    email?: string
+    internal_email?: string
+    username?: string
+    role?: string
+}): string {
+    const candidates = [
+        normalizeEmail(body.internal_email),
+        normalizeEmail(body.email),
+        body.username ? `${String(body.username).trim().toLowerCase()}@sncpc.com` : "",
+    ].filter((e) => e.includes("@"))
+
+    const adminLike = candidates.find((e) => isAdminEmail(e))
+    if (adminLike) return adminLike
+
+    if (isAsCenterSsoRole(body.role) && body.username) {
+        const mapped = `${String(body.username).trim().toLowerCase()}@sncpc.com`
+        if (mapped.includes("@")) return mapped
+    }
+
+    const bootstrap = normalizeEmail(process.env.AS_CENTER_SSO_BOOTSTRAP_EMAIL)
+    if (bootstrap && isAdminEmail(bootstrap)) return bootstrap
+
+    return ""
+}
+
 export function issueSsoToken(body: {
     as_center_user_id?: number
     username?: string
     name?: string
     email?: string
+    internal_email?: string
     role?: string
     company_id?: number
     redirect?: string
 }): { token: string; expires_at: string; redirect: string } {
-    const email = String(body.email || "").trim().toLowerCase()
-    if (!email || !isAdminEmail(email)) {
-        throw Object.assign(new Error("SSO 대상 이메일이 운영콘솔 관리자 권한이 없습니다."), {
+    const email = resolveIntegrationSsoEmail(body)
+    if (!email) {
+        throw Object.assign(
+            new Error(
+                "SSO 대상 이메일을 정할 수 없습니다. users.internal_email(@sncpc.com)을 등록하거나, 업무앱 관리자 역할·username을 확인하세요."
+            ),
+            { status: 403 }
+        )
+    }
+    if (!isAsCenterSsoRole(body.role) && !isAdminEmail(email)) {
+        throw Object.assign(new Error("업무앱에서 운영콘솔 SSO는 관리자·매니저 역할만 가능합니다."), {
             status: 403,
         })
     }
