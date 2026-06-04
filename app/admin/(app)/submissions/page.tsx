@@ -12,6 +12,8 @@ export default function SubmissionsPage() {
     const [submissions, setSubmissions] = useState<Submission[]>([])
     const [loading, setLoading] = useState(true)
     const [selected, setSelected] = useState<Submission | null>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+    const [bulkRunning, setBulkRunning] = useState(false)
 
     const load = useCallback(async () => {
         setLoading(true)
@@ -22,6 +24,7 @@ export default function SubmissionsPage() {
             if (res.ok) {
                 const json = await res.json()
                 setSubmissions(json.submissions || [])
+                setSelectedIds(new Set())
             }
         } catch (err) {
             console.error("Failed to load submissions:", err)
@@ -33,6 +36,45 @@ export default function SubmissionsPage() {
     useEffect(() => {
         load()
     }, [load])
+
+    const toggleSelect = (id: string) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev)
+            if (next.has(id)) next.delete(id)
+            else next.add(id)
+            return next
+        })
+    }
+
+    const allSelected =
+        submissions.length > 0 && submissions.every((s) => selectedIds.has(s.id))
+
+    const toggleSelectAll = () => {
+        if (allSelected) setSelectedIds(new Set())
+        else setSelectedIds(new Set(submissions.map((s) => s.id)))
+    }
+
+    const runBulkStatus = async (status: Submission["status"]) => {
+        const ids = [...selectedIds]
+        if (!ids.length) return
+        const label = { new: "신규", contacted: "연락중", completed: "완료", declined: "거절" }[status]
+        if (!confirm(`선택 ${ids.length}건을 「${label}」로 변경할까요?`)) return
+        setBulkRunning(true)
+        for (const id of ids) {
+            try {
+                await fetch(`/api/submissions/${id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status }),
+                })
+            } catch {
+                /* continue */
+            }
+        }
+        setBulkRunning(false)
+        setSelectedIds(new Set())
+        load()
+    }
 
     const handleUpdated = (updated: Submission) => {
         setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)))
@@ -54,6 +96,63 @@ export default function SubmissionsPage() {
                 </p>
             </div>
 
+            {selectedIds.size > 0 ? (
+                <div
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: 8,
+                        marginBottom: 16,
+                        padding: "12px 16px",
+                        background: "#F0F6FF",
+                        border: "1px solid #C7DEFF",
+                        borderRadius: 10,
+                        alignItems: "center",
+                    }}
+                >
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#0046C0", marginRight: 8 }}>
+                        {selectedIds.size}건 선택
+                    </span>
+                    {(["contacted", "completed", "declined"] as const).map((st) => (
+                        <button
+                            key={st}
+                            type="button"
+                            disabled={bulkRunning}
+                            onClick={() => runBulkStatus(st)}
+                            style={{
+                                background: st === "completed" ? "#10B981" : st === "declined" ? "#EF4444" : "#0066FF",
+                                color: "#fff",
+                                border: "none",
+                                borderRadius: 8,
+                                padding: "8px 14px",
+                                fontSize: 12,
+                                fontWeight: 600,
+                                cursor: "pointer",
+                            }}
+                        >
+                            일괄 {st === "contacted" ? "연락중" : st === "completed" ? "완료" : "거절"}
+                        </button>
+                    ))}
+                    <button
+                        type="button"
+                        disabled={bulkRunning}
+                        onClick={() => setSelectedIds(new Set())}
+                        style={{
+                            background: "#8A9AB8",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: 8,
+                            padding: "8px 14px",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                        }}
+                    >
+                        선택 해제
+                    </button>
+                </div>
+            ) : null}
+
             {loading ? (
                 <div
                     style={{
@@ -72,6 +171,10 @@ export default function SubmissionsPage() {
                     submissions={submissions}
                     onSelect={setSelected}
                     selectedId={selected?.id}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onToggleSelectAll={toggleSelectAll}
+                    allSelected={allSelected}
                 />
             )}
 

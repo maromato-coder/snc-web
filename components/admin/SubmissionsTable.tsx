@@ -45,9 +45,22 @@ interface Props {
     submissions: Submission[]
     onSelect: (s: Submission) => void
     selectedId?: string
+    selectedIds?: Set<string>
+    onToggleSelect?: (id: string) => void
+    onToggleSelectAll?: () => void
+    allSelected?: boolean
 }
 
-export default function SubmissionsTable({ submissions, onSelect, selectedId }: Props) {
+export default function SubmissionsTable({
+    submissions,
+    onSelect,
+    selectedId,
+    selectedIds,
+    onToggleSelect,
+    onToggleSelectAll,
+    allSelected,
+}: Props) {
+    const bulkOn = !!onToggleSelect
     const [search, setSearch] = useState("")
     const [filterType, setFilterType] = useState("all")
     const [filterStatus, setFilterStatus] = useState("all")
@@ -211,7 +224,7 @@ export default function SubmissionsTable({ submissions, onSelect, selectedId }: 
                 <div
                     style={{
                         display: "grid",
-                        gridTemplateColumns: "100px 80px 1fr 130px 110px 90px",
+                        gridTemplateColumns: bulkOn ? "36px 100px 80px 1fr 130px 110px 90px" : "100px 80px 1fr 130px 110px 90px",
                         padding: "10px 20px",
                         background: "#F8FAFF",
                         borderBottom: "1px solid #E2E8F2",
@@ -221,6 +234,16 @@ export default function SubmissionsTable({ submissions, onSelect, selectedId }: 
                         letterSpacing: 0.5,
                     }}
                 >
+                    {bulkOn ? (
+                        <div>
+                            <input
+                                type="checkbox"
+                                checked={!!allSelected}
+                                onChange={() => onToggleSelectAll?.()}
+                                title="현재 목록 전체 선택"
+                            />
+                        </div>
+                    ) : null}
                     <div>신청일</div>
                     <div>종류</div>
                     <div>이름 · 연락처</div>
@@ -259,15 +282,24 @@ export default function SubmissionsTable({ submissions, onSelect, selectedId }: 
                                 onClick={() => onSelect(s)}
                                 style={{
                                     display: "grid",
-                                    gridTemplateColumns: "100px 80px 1fr 130px 110px 90px",
+                                    gridTemplateColumns: bulkOn ? "36px 100px 80px 1fr 130px 110px 90px" : "100px 80px 1fr 130px 110px 90px",
                                     padding: "13px 20px",
                                     borderBottom: i < filtered.length - 1 ? "1px solid #F0F2F8" : "none",
                                     cursor: "pointer",
-                                    background: isSelected ? "#F0F6FF" : "transparent",
+                                    background: isSelected ? "#F0F6FF" : selectedIds?.has(s.id) ? "#FAFCFF" : "transparent",
                                     alignItems: "center",
                                     transition: "background 0.1s",
                                 }}
                             >
+                                {bulkOn ? (
+                                    <div onClick={(e) => e.stopPropagation()}>
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedIds?.has(s.id)}
+                                            onChange={() => onToggleSelect?.(s.id)}
+                                        />
+                                    </div>
+                                ) : null}
                                 <div style={{ fontSize: 12, color: "#8A9AB8" }}>{dateStr}</div>
                                 <div>
                                     <span

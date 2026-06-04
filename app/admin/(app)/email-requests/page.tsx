@@ -42,16 +42,72 @@ export default function EmailRequestsPage() {
     const [memo, setMemo] = useState("")
     const [saving, setSaving] = useState(false)
     const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null)
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+    const [bulkRunning, setBulkRunning] = useState(false)
 
     const load = useCallback(async () => {
         setLoading(true)
         const res = await fetch(`/api/email-requests?status=${filterStatus}`)
         const json = await res.json()
         setRequests(json.requests || [])
+        setSelectedIds(new Set())
         setLoading(false)
     }, [filterStatus])
 
     useEffect(() => { load() }, [load])
+
+    const toggleSelect = (id: string) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev)
+            if (next.has(id)) next.delete(id)
+            else next.add(id)
+            return next
+        })
+    }
+
+    const selectableIds = requests
+        .filter((r) => r.status === "pending" || r.status === "approved")
+        .map((r) => r.id)
+
+    const allSelected =
+        selectableIds.length > 0 && selectableIds.every((id) => selectedIds.has(id))
+
+    const toggleSelectAll = () => {
+        if (allSelected) setSelectedIds(new Set())
+        else setSelectedIds(new Set(selectableIds))
+    }
+
+    const runBulk = async (status: string) => {
+        const ids = [...selectedIds]
+        if (!ids.length) return
+        const label =
+            status === "approved" ? "승인" : status === "issued" ? "발급 완료" : status === "rejected" ? "거절" : status
+        if (!confirm(`선택 ${ids.length}건을 「${label}」 처리할까요?`)) return
+        setBulkRunning(true)
+        setMsg(null)
+        let ok = 0
+        let fail = 0
+        for (const id of ids) {
+            try {
+                const res = await fetch(`/api/email-requests/${id}`, {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status, admin_memo: memo || undefined }),
+                })
+                if (res.ok) ok += 1
+                else fail += 1
+            } catch {
+                fail += 1
+            }
+        }
+        setBulkRunning(false)
+        setSelectedIds(new Set())
+        setMsg({
+            type: fail ? "err" : "ok",
+            text: fail ? `${ok}건 성공, ${fail}건 실패` : `${ok}건 일괄 처리 완료`,
+        })
+        load()
+    }
 
     const handleAction = async (id: string, status: string) => {
         setSaving(true)
@@ -154,6 +210,58 @@ export default function EmailRequestsPage() {
                 ))}
             </div>
 
+            {selectedIds.size > 0 ? (
+                <div
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 16,
+                        padding: "12px 16px",
+                        background: "#F0F6FF",
+                        border: "1px solid #C7DEFF",
+                        borderRadius: 10,
+                    }}
+                >
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#0046C0", marginRight: 8 }}>
+                        {selectedIds.size}건 선택
+                    </span>
+                    <button
+                        type="button"
+                        disabled={bulkRunning}
+                        onClick={() => runBulk("approved")}
+                        style={bulkBtn("#0066FF")}
+                    >
+                        일괄 승인
+                    </button>
+                    <button
+                        type="button"
+                        disabled={bulkRunning}
+                        onClick={() => runBulk("issued")}
+                        style={bulkBtn("#10B981")}
+                    >
+                        일괄 발급완료
+                    </button>
+                    <button
+                        type="button"
+                        disabled={bulkRunning}
+                        onClick={() => runBulk("rejected")}
+                        style={bulkBtn("#EF4444")}
+                    >
+                        일괄 거절
+                    </button>
+                    <button
+                        type="button"
+                        disabled={bulkRunning}
+                        onClick={() => setSelectedIds(new Set())}
+                        style={bulkBtn("#8A9AB8")}
+                    >
+                        선택 해제
+                    </button>
+                </div>
+            ) : null}
+
             {/* 신청 목록 */}
             {loading ? (
                 <div style={{ padding: 40, textAlign: "center", color: "#8A9AB8", fontSize: 13 }}>불러오는 중...</div>
@@ -163,11 +271,20 @@ export default function EmailRequestsPage() {
                 <div style={{ background: "#FFFFFF", border: "1px solid #E2E8F2", borderRadius: 12, overflow: "hidden" }}>
                     {/* 헤더 */}
                     <div style={{
-                        display: "grid", gridTemplateColumns: "1fr 1fr 1fr 90px 100px",
+                        display: "grid", gridTemplateColumns: "36px 1fr 1fr 1fr 90px 100px",
                         padding: "10px 20px", background: "#F8FAFF",
                         borderBottom: "1px solid #E2E8F2",
                         fontSize: 11, fontWeight: 700, color: "#8A9AB8", letterSpacing: 0.5,
+                        alignItems: "center",
                     }}>
+                        <div>
+                            <input
+                                type="checkbox"
+                                checked={allSelected}
+                                onChange={toggleSelectAll}
+                                title="처리 가능 건 전체 선택"
+                            />
+                        </div>
                         <div>신청자</div>
                         <div>신청 주소</div>
                         <div>소속 / 용도</div>
@@ -180,20 +297,30 @@ export default function EmailRequestsPage() {
                         const dateStr = new Date(r.created_at).toLocaleDateString("ko-KR", {
                             month: "2-digit", day: "2-digit", timeZone: "Asia/Seoul",
                         })
+                        const canBulk = r.status === "pending" || r.status === "approved"
                         return (
                             <div
                                 key={r.id}
                                 onClick={() => { setSelected(r); setMemo(r.admin_memo || ""); setMsg(null) }}
                                 style={{
-                                    display: "grid", gridTemplateColumns: "1fr 1fr 1fr 90px 100px",
+                                    display: "grid", gridTemplateColumns: "36px 1fr 1fr 1fr 90px 100px",
                                     padding: "14px 20px",
                                     borderBottom: i < requests.length - 1 ? "1px solid #F0F2F8" : "none",
                                     cursor: "pointer",
-                                    background: selected?.id === r.id ? "#F0F6FF" : "transparent",
+                                    background: selected?.id === r.id ? "#F0F6FF" : selectedIds.has(r.id) ? "#FAFCFF" : "transparent",
                                     alignItems: "center",
                                     transition: "background 0.1s",
                                 }}
                             >
+                                <div onClick={(e) => e.stopPropagation()}>
+                                    <input
+                                        type="checkbox"
+                                        disabled={!canBulk}
+                                        checked={selectedIds.has(r.id)}
+                                        onChange={() => toggleSelect(r.id)}
+                                        title={canBulk ? "일괄 처리 선택" : "발급·거절 완료 건"}
+                                    />
+                                </div>
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 600, color: "#0A1733" }}>{r.requester_name}</div>
                                     <div style={{ fontSize: 11, color: "#8A9AB8", marginTop: 2 }}>{r.requester_email}</div>
@@ -344,4 +471,16 @@ const actionBtn = (bg: string): React.CSSProperties => ({
     border: "none", borderRadius: 9, padding: "11px",
     fontSize: 13, fontWeight: 600, cursor: "pointer",
     fontFamily: "inherit", transition: "opacity 0.15s",
+})
+
+const bulkBtn = (bg: string): React.CSSProperties => ({
+    background: bg,
+    color: "#FFFFFF",
+    border: "none",
+    borderRadius: 8,
+    padding: "8px 14px",
+    fontSize: 12,
+    fontWeight: 600,
+    cursor: "pointer",
+    fontFamily: "inherit",
 })
