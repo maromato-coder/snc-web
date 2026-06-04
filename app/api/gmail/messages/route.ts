@@ -5,7 +5,7 @@ import { isAdminEmail } from "@/lib/auth-check"
 
 // ════════════════════════════════════════════════
 // GET /api/gmail/messages
-// Gmail 받은메일함 목록 조회 (최신 20건)
+// 검색·페이지네이션·스레드 지원
 // ════════════════════════════════════════════════
 
 async function refreshAccessToken(refreshToken: string): Promise<string | null> {
@@ -23,7 +23,7 @@ async function refreshAccessToken(refreshToken: string): Promise<string | null> 
     return data.access_token || null
 }
 
-async function getValidToken(supabase: ReturnType<typeof createServerSupabaseClient>) {
+export async function getValidGmailToken(supabase: ReturnType<typeof createServerSupabaseClient>) {
     const { data: tokenRow } = await supabase
         .from("gmail_tokens")
         .select("*")
@@ -33,7 +33,6 @@ async function getValidToken(supabase: ReturnType<typeof createServerSupabaseCli
 
     if (!tokenRow) return null
 
-    // 만료 5분 전이면 갱신
     const isExpired = tokenRow.expiry_date < Date.now() + 5 * 60 * 1000
     if (isExpired && tokenRow.refresh_token) {
         const newToken = await refreshAccessToken(tokenRow.refresh_token)
@@ -49,7 +48,6 @@ async function getValidToken(supabase: ReturnType<typeof createServerSupabaseCli
     return tokenRow.access_token
 }
 
-// 메시지 헤더에서 값 추출
 function getHeader(headers: { name: string; value: string }[], name: string): string {
     return headers.find(h => h.name.toLowerCase() === name.toLowerCase())?.value || ""
 }
@@ -63,28 +61,79 @@ export async function GET(req: NextRequest) {
         }
 
         const supabase = createServerSupabaseClient()
-        const accessToken = await getValidToken(supabase)
-
+        const accessToken = await getValidGmailToken(supabase)
         if (!accessToken) {
-            return NextResponse.json({ error: "gmail_not_connected", messages: [] }, { status: 200 })
+            return NextResponse.json({ error: "gmail_not_connected", messages: [], threads: [] }, { status: 200 })
         }
 
         const { searchParams } = new URL(req.url)
-        const maxResults = Number(searchParams.get("max") || 20)
+        const maxResults = Math.min(Number(searchParams.get("max") || 20), 50)
+        const pageToken = searchParams.get("pageToken") || ""
         const query = searchParams.get("q") || "in:inbox"
+        const threadMode = searchParams.get("threads") === "1"
 
-        // 메시지 목록 조회
-        const listRes = await fetch(
-            `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${maxResults}&q=${encodeURIComponent(query)}&labelIds=INBOX`,
-            { headers: { Authorization: `Bearer ${accessToken}` } }
-        )
-        const listData = await listRes.json()
+        // ── 스레드 모드 ──
+        if (threadMode) {
+            const url = new URL("https://gmail.googleapis.com/gmail/v1/users/me/threads")
+            url.searchParams.set("maxResults", String(maxResults))
+            url.searchParams.set("q", query)
+            if (pageToken) url.searchParams.set("pageToken", pageToken)
 
-        if (!listData.messages || listData.messages.length === 0) {
-            return NextResponse.json({ messages: [], connected: true })
+            const listRes = await fetch(url.toString(), { headers: { Authorization: `Bearer ${accessToken}` } })
+            const listData = await listRes.json()
+
+            if (!listData.threads?.length) {
+                return NextResponse.json({ threads: [], connected: true, nextPageToken: null })
+            }
+
+            const threads = await Promise.all(
+                listData.threads.map(async (t: { id: string }) => {
+                    const tRes = await fetch(
+                        `https://gmail.googleapis.com/gmail/v1/users/me/threads/${t.id}?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Subject&metadataHeaders=Date`,
+                        { headers: { Authorization: `Bearer ${accessToken}` } }
+                    )
+                    const tData = await tRes.json()
+                    const msgs = tData.messages || []
+                    const first = msgs[0]
+                    const last = msgs[msgs.length - 1]
+                    const headers = first?.payload?.headers || []
+                    const lastHeaders = last?.payload?.headers || []
+
+                    return {
+                        threadId:     t.id,
+                        subject:      getHeader(headers, "Subject") || "(제목 없음)",
+                        from:         getHeader(headers, "From"),
+                        lastFrom:     getHeader(lastHeaders, "From"),
+                        date:         getHeader(lastHeaders, "Date"),
+                        snippet:      last?.snippet || "",
+                        messageCount: msgs.length,
+                        isRead:       !msgs.some((m: { labelIds?: string[] }) => m.labelIds?.includes("UNREAD")),
+                        messageIds:   msgs.map((m: { id: string }) => m.id),
+                    }
+                })
+            )
+
+            return NextResponse.json({
+                threads,
+                connected: true,
+                nextPageToken: listData.nextPageToken || null,
+            })
         }
 
-        // 각 메시지 상세 조회 (병렬)
+        // ── 일반 메시지 모드 ──
+        const url = new URL("https://gmail.googleapis.com/gmail/v1/users/me/messages")
+        url.searchParams.set("maxResults", String(maxResults))
+        url.searchParams.set("q", query)
+        url.searchParams.set("labelIds", "INBOX")
+        if (pageToken) url.searchParams.set("pageToken", pageToken)
+
+        const listRes = await fetch(url.toString(), { headers: { Authorization: `Bearer ${accessToken}` } })
+        const listData = await listRes.json()
+
+        if (!listData.messages?.length) {
+            return NextResponse.json({ messages: [], connected: true, nextPageToken: null })
+        }
+
         const messageDetails = await Promise.all(
             listData.messages.map(async (msg: { id: string }) => {
                 const detailRes = await fetch(
@@ -93,22 +142,26 @@ export async function GET(req: NextRequest) {
                 )
                 const detail = await detailRes.json()
                 const headers = detail.payload?.headers || []
-
                 return {
-                    id:       detail.id,
-                    threadId: detail.threadId,
-                    from:     getHeader(headers, "From"),
-                    to:       getHeader(headers, "To"),
-                    subject:  getHeader(headers, "Subject") || "(제목 없음)",
-                    date:     getHeader(headers, "Date"),
-                    snippet:  detail.snippet || "",
-                    isRead:   !detail.labelIds?.includes("UNREAD"),
-                    labels:   detail.labelIds || [],
+                    id:          detail.id,
+                    threadId:    detail.threadId,
+                    from:        getHeader(headers, "From"),
+                    to:          getHeader(headers, "To"),
+                    subject:     getHeader(headers, "Subject") || "(제목 없음)",
+                    date:        getHeader(headers, "Date"),
+                    snippet:     detail.snippet || "",
+                    isRead:      !detail.labelIds?.includes("UNREAD"),
+                    labels:      detail.labelIds || [],
+                    _source:     "gmail",
                 }
             })
         )
 
-        return NextResponse.json({ messages: messageDetails, connected: true })
+        return NextResponse.json({
+            messages: messageDetails,
+            connected: true,
+            nextPageToken: listData.nextPageToken || null,
+        })
     } catch (err) {
         console.error("[GET /api/gmail/messages]", err)
         return NextResponse.json({ error: "서버 오류", messages: [] }, { status: 500 })
