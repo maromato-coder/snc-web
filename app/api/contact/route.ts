@@ -15,6 +15,7 @@ interface SubmissionBody {
     type: "join" | "enterprise"
     name: string
     phone: string
+    email?: string
     message?: string
     // LP-A 전용
     region?: string
@@ -76,7 +77,38 @@ export async function POST(req: NextRequest) {
             )
         }
 
-        // ──────── 2. 메일 알림 (실패해도 응답은 성공) ────────
+        // ──────── 2. as_center 웹훅 (실패해도 응답은 성공) ────────
+        const webhookUrl = process.env.AS_CENTER_WEBHOOK_URL
+        if (webhookUrl) {
+            try {
+                await fetch(webhookUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-SNC-Webhook": process.env.INTEGRATION_API_KEY || "",
+                    },
+                    body: JSON.stringify({
+                        event: "submission.created",
+                        data: {
+                            id: data.id,
+                            type: body.type,
+                            name: body.name,
+                            phone: body.phone,
+                            email: body.email || null,
+                            company: body.company || null,
+                            region: body.region || null,
+                            site_id: siteInfo.site_id,
+                            created_at: new Date().toISOString(),
+                        },
+                        timestamp: new Date().toISOString(),
+                    }),
+                })
+            } catch (webhookErr) {
+                console.error("[/api/contact] Webhook failed:", webhookErr)
+            }
+        }
+
+        // ──────── 3. 메일 알림 (실패해도 응답은 성공) ────────
         try {
             const isJoin = body.type === "join"
             const typeLabel = isJoin ? "가맹 신청" : "기업 진단 신청"
