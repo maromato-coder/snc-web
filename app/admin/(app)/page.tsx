@@ -151,8 +151,7 @@ export default async function AdminDashboard() {
                                         alignItems: "center",
                                         transition: "background 0.1s",
                                     }}
-                                    onMouseEnter={(e) => (e.currentTarget.style.background = "#F8FAFF")}
-                                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+
                                 >
                                     <div style={{ fontSize: 12, color: "#8A9AB8" }}>{dateStr}</div>
                                     <div>

@@ -6,7 +6,7 @@ export default function LPAFinalCTA() {
     const [isMobile, setIsMobile] = React.useState(false)
     const [mounted, setMounted] = React.useState(false)
 
-    const [form, setForm] = React.useState({ name: "", phone: "", region: "", message: "" })
+    const [form, setForm] = React.useState({ name: "", phone: "", email: "", region: "", message: "" })
     const [submitted, setSubmitted] = React.useState(false)
     const [submitting, setSubmitting] = React.useState(false)
     const [error, setError] = React.useState("")
@@ -155,6 +155,9 @@ export default function LPAFinalCTA() {
                                 </FormField>
                                 <FormField label="연락처" required>
                                     <input name="phone" value={form.phone} onChange={handleChange} placeholder="010-0000-0000" inputMode="tel" disabled={submitting} style={inputStyle} />
+                                </FormField>
+                                <FormField label="이메일">
+                                    <input name="email" value={form.email} onChange={handleChange} placeholder="example@email.com" inputMode="email" type="email" disabled={submitting} style={inputStyle} />
                                 </FormField>
                                 <FormField label="지역">
                                     <input name="region" value={form.region} onChange={handleChange} placeholder="예: 서울 강동구" disabled={submitting} style={inputStyle} />

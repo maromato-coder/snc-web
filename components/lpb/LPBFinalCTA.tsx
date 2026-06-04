@@ -12,6 +12,7 @@ export default function LPBFinalCTA() {
         company: "",
         name: "",
         phone: "",
+        email: "",
         size: "",
         message: "",
     })
@@ -236,6 +237,9 @@ export default function LPBFinalCTA() {
                                     </FormField>
                                     <FormField label="연락처" required>
                                         <input name="phone" value={form.phone} onChange={handleChange} placeholder="010-0000-0000" inputMode="tel" style={inputStyle} />
+                                    </FormField>
+                                    <FormField label="이메일">
+                                        <input name="email" value={form.email} onChange={handleChange} placeholder="example@email.com" type="email" inputMode="email" style={inputStyle} />
                                     </FormField>
                                 </div>
 
