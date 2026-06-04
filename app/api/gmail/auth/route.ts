@@ -29,7 +29,6 @@ export async function GET() {
     url.searchParams.set("scope", SCOPES)
     url.searchParams.set("access_type", "offline")
     url.searchParams.set("prompt", "consent")
-    url.searchParams.set("login_hint", "jyp@sncpc.com")
 
     return NextResponse.redirect(url.toString())
 }
