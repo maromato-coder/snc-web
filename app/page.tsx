@@ -13,6 +13,7 @@ import NewsAndFamily from "@/components/NewsAndFamily"
 import FinalCTAFooter from "@/components/FinalCTAFooter"
 import MobileMenu from "@/components/MobileMenu"
 import StickyBottomCTA from "@/components/StickyBottomCTA"
+import BrandPC from "@/components/BrandPC"
 import * as React from "react"
 
 export default function Home() {
@@ -309,6 +310,7 @@ export default function Home() {
                 </div>
 
                 {/* ────────── 나머지 섹션들 ────────── */}
+                <BrandPC isMobile={isMobile} />
                 <div id="solutions">
                     <TrustBar />
                     <PersonaRouter />
