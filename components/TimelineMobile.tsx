@@ -10,14 +10,15 @@ interface Milestone {
 }
 
 const milestones: Milestone[] = [
-    { year: 2001, title: "강동 1호점 창업", subtitle: "한 평의 컴퓨터 가게", status: "past" },
-    { year: 2010, title: "주연테크 공식대리점", subtitle: "정통 채널 등극", status: "past" },
-    { year: 2015, title: "누적 AS 5만 건 돌파", subtitle: "강동의 PC 지킴이", status: "past" },
-    { year: 2020, title: "KOSA 정회원 가입", subtitle: "IT 솔루션 기업 인증", status: "past" },
-    { year: 2024, title: "CI·BI 리뉴얼", subtitle: "악수의 의미를 담다", status: "past" },
-    { year: 2026, title: "NODE 네트워크 출범", subtitle: "전국 106개 거점", status: "current" },
-    { year: 2027, title: "특허·VAN 확장", subtitle: "플랫폼 전환", status: "future" },
-    { year: 2030, title: "30,000 NODE 비전", subtitle: "한국판 Geek Squad", status: "future" },
+    { year: 1999, title: "본사 창업", subtitle: "8평의 컴퓨터 매장", status: "past" },
+    { year: 2001, title: "주연테크 공식대리점", subtitle: "중견 브랜드PC 대리점 겸업", status: "past" },
+    { year: 2005, title: "누적 AS 5만 건 돌파", subtitle: "강동·송파의 AS 메카", status: "past" },
+    { year: 2007, title: "마이리페어 런칭", subtitle: "리페어 전문 브랜드", status: "past" },
+    { year: 2010, title: "SNC컴퓨터 런칭", subtitle: "PC 전문 제조·조립 브랜드", status: "past" },
+    { year: 2013, title: "서비스센터 확장", subtitle: "운영 거점 확대", status: "past" },
+    { year: 2015, title: "전국망 대리점 사업", subtitle: "NODE 네트워크의 시작", status: "past" },
+    { year: 2026, title: "통합관리플랫폼 런칭", subtitle: "SNC컴퓨터 디지털 전환", status: "current" },
+    { year: 2030, title: "30,000 NODE 비전", subtitle: "컴퓨터! 하면 SNC!", status: "future" },
 ]
 
 export default function TimelineMobile() {
@@ -36,7 +37,7 @@ export default function TimelineMobile() {
                             fontFamily: "'Inter', sans-serif",
                         }}
                     >
-                        OUR JOURNEY
+                        SINCE 1999
                     </div>
                     <h2
                         style={{
@@ -48,11 +49,11 @@ export default function TimelineMobile() {
                             margin: "0 0 12px 0",
                         }}
                     >
-                        25년의 발자취,{" "}
-                        <span style={{ color: "#0066FF" }}>그리고 다음 5년</span>
+                        27년의 발자취,{" "}
+                        <span style={{ color: "#0066FF" }}>그리고 다음 4년</span>
                     </h2>
                     <p style={{ fontSize: 13, lineHeight: 1.6, color: "#5A6A8A", margin: 0 }}>
-                        한 평의 가게에서 시작해, 30,000개의 NODE로.
+                        8평의 가게에서 시작해, 30,000개의 NODE로.
                     </p>
                 </div>
 
@@ -67,7 +68,7 @@ export default function TimelineMobile() {
                             bottom: 8,
                             width: 2,
                             background:
-                                "linear-gradient(to bottom, #0066FF 0%, #0066FF 65%, #C5D0E5 65%, #C5D0E5 100%)",
+                                "linear-gradient(to bottom, #0066FF 0%, #0066FF 78%, #C5D0E5 78%, #C5D0E5 100%)",
                         }}
                     />
 
@@ -216,7 +217,7 @@ function MilestoneRow({ milestone }: { milestone: Milestone }) {
                         fontStyle: "italic",
                     }}
                 >
-                    "{milestone.subtitle}"
+                    &quot;{milestone.subtitle}&quot;
                 </div>
             </div>
         </div>

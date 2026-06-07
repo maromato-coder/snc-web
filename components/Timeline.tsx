@@ -12,14 +12,15 @@ interface Milestone {
 }
 
 const milestones: Milestone[] = [
-    { year: 2001, title: "강동 1호점 창업", subtitle: "한 평의 컴퓨터 가게", status: "past", position: "top" },
-    { year: 2010, title: "주연테크 공식대리점", subtitle: "정통 채널 등극", status: "past", position: "bottom" },
-    { year: 2015, title: "누적 AS 5만 건 돌파", subtitle: "강동의 PC 지킴이", status: "past", position: "top" },
-    { year: 2020, title: "KOSA 정회원 가입", subtitle: "IT 솔루션 기업 인증", status: "past", position: "bottom" },
-    { year: 2024, title: "CI·BI 리뉴얼", subtitle: "악수의 의미를 담다", status: "past", position: "top" },
-    { year: 2026, title: "NODE 네트워크 출범", subtitle: "전국 106개 거점", status: "current", position: "bottom" },
-    { year: 2027, title: "특허·VAN 확장", subtitle: "플랫폼 전환", status: "future", position: "top" },
-    { year: 2030, title: "30,000 NODE 비전", subtitle: "한국판 Geek Squad", status: "future", position: "bottom" },
+    { year: 1999, title: "본사 창업", subtitle: "8평의 컴퓨터 매장", status: "past", position: "top" },
+    { year: 2001, title: "주연테크 공식대리점", subtitle: "중견 브랜드PC 대리점 겸업", status: "past", position: "bottom" },
+    { year: 2005, title: "누적 AS 5만 건 돌파", subtitle: "강동·송파의 AS 메카", status: "past", position: "top" },
+    { year: 2007, title: "마이리페어 런칭", subtitle: "리페어 전문 브랜드", status: "past", position: "bottom" },
+    { year: 2010, title: "SNC컴퓨터 런칭", subtitle: "PC 전문 제조·조립 브랜드", status: "past", position: "top" },
+    { year: 2013, title: "서비스센터 확장", subtitle: "운영 거점 확대", status: "past", position: "bottom" },
+    { year: 2015, title: "전국망 대리점 사업", subtitle: "NODE 네트워크의 시작", status: "past", position: "top" },
+    { year: 2026, title: "통합관리플랫폼 런칭", subtitle: "SNC컴퓨터 디지털 전환", status: "current", position: "bottom" },
+    { year: 2030, title: "30,000 NODE 비전", subtitle: "컴퓨터! 하면 SNC!", status: "future", position: "top" },
 ]
 
 const currentIdx = milestones.findIndex((m) => m.status === "current")
@@ -45,27 +46,27 @@ export default function Timeline() {
             <div style={{ maxWidth: 1440, margin: "0 auto" }}>
                 <div style={{ textAlign: "center", marginBottom: 80 }}>
                     <div style={{ fontSize: 13, color: "#0046C0", letterSpacing: 2, fontWeight: 500, marginBottom: 16, fontFamily: "'Inter', sans-serif" }}>
-                        OUR JOURNEY
+                        SINCE 1999
                     </div>
                     <h2 style={{ fontSize: 44, lineHeight: 1.25, fontWeight: 500, letterSpacing: -1.5, color: "#0A1733", margin: "0 0 16px 0" }}>
-                        25년의 발자취, <span style={{ color: "#0066FF" }}>그리고 다음 5년</span>
+                        27년의 발자취, <span style={{ color: "#0066FF" }}>그리고 다음 4년</span>
                     </h2>
                     <p style={{ fontSize: 17, lineHeight: 1.6, color: "#5A6A8A", margin: 0 }}>
-                        한 평의 가게에서 시작해, 30,000개의 NODE로.
+                        8평의 가게에서 시작해, 30,000개의 NODE로.
                     </p>
                 </div>
 
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(8, 1fr)", gridTemplateRows: "180px 60px 180px", position: "relative", columnGap: 0 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(9, 1fr)", gridTemplateRows: "180px 60px 180px", position: "relative", columnGap: 0 }}>
                     {milestones.map((m, i) => (
                         <div key={`t-${m.year}`} style={{ gridRow: 1, gridColumn: i + 1, display: "flex", alignItems: "flex-end", justifyContent: "center", padding: "24px 8px" }}>
                             {m.position === "top" && <MilestoneCard milestone={m} />}
                         </div>
                     ))}
 
-                    <div style={{ gridRow: 2, gridColumn: "1 / -1", position: "relative", display: "grid", gridTemplateColumns: "repeat(8, 1fr)", alignItems: "center" }}>
-                        <svg viewBox="0 0 700 4" preserveAspectRatio="none" style={{ position: "absolute", top: "50%", left: "calc(100% / 16)", width: "calc(100% - 100% / 8)", height: 4, transform: "translateY(-50%)", pointerEvents: "none" }}>
-                            <line x1="0" y1="2" x2={pastRatio * 700} y2="2" stroke="#0066FF" strokeWidth="2" />
-                            <line x1={pastRatio * 700} y1="2" x2="700" y2="2" stroke="#C5D0E5" strokeWidth="2" strokeDasharray="6 6" />
+                    <div style={{ gridRow: 2, gridColumn: "1 / -1", position: "relative", display: "grid", gridTemplateColumns: "repeat(9, 1fr)", alignItems: "center" }}>
+                        <svg viewBox="0 0 900 4" preserveAspectRatio="none" style={{ position: "absolute", top: "50%", left: "calc(100% / 18)", width: "calc(100% - 100% / 9)", height: 4, transform: "translateY(-50%)", pointerEvents: "none" }}>
+                            <line x1="0" y1="2" x2={pastRatio * 900} y2="2" stroke="#0066FF" strokeWidth="2" />
+                            <line x1={pastRatio * 900} y1="2" x2="900" y2="2" stroke="#C5D0E5" strokeWidth="2" strokeDasharray="6 6" />
                         </svg>
                         {milestones.map((m) => (
                             <div key={`d-${m.year}`} style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", zIndex: 2 }}>
@@ -120,7 +121,7 @@ function MilestoneCard({ milestone }: { milestone: Milestone }) {
                 {milestone.title}
             </div>
             <div style={{ fontSize: 11, color: isCurrent ? "rgba(255, 255, 255, 0.8)" : "#5A6A8A", lineHeight: 1.4, fontStyle: "italic" }}>
-                "{milestone.subtitle}"
+                &quot;{milestone.subtitle}&quot;
             </div>
         </div>
     )
