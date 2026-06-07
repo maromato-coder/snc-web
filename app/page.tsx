@@ -14,6 +14,7 @@ import FinalCTAFooter from "@/components/FinalCTAFooter"
 import MobileMenu from "@/components/MobileMenu"
 import StickyBottomCTA from "@/components/StickyBottomCTA"
 import BrandPC from "@/components/BrandPC"
+import MainHeader from "@/components/MainHeader"
 import SNCCare from "@/components/SNCCare"
 import * as React from "react"
 
@@ -40,112 +41,7 @@ export default function Home() {
             <main style={{ background: "#FFFFFF", minHeight: "100vh", color: "#0A1733" }}>
 
                 {/* ────────── NAVIGATION ────────── */}
-                <nav
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: isMobile ? "16px 20px" : "24px 80px",
-                        borderBottom: "1px solid #F0F2F5",
-                        background: "#FFFFFF",
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 100,
-                    }}
-                >
-                    {/* 로고 */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                        <div
-                            style={{
-                                width: isMobile ? 36 : 44,
-                                height: isMobile ? 36 : 44,
-                                background: "#0066FF",
-                                borderRadius: 10,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                color: "#FFFFFF",
-                                fontWeight: 800,
-                                fontSize: isMobile ? 14 : 18,
-                                letterSpacing: -0.5,
-                                fontFamily: "'Inter', sans-serif",
-                            }}
-                        >
-                            SNC
-                        </div>
-                        {!isMobile && (
-                            <span
-                                style={{
-                                    fontSize: 17,
-                                    fontWeight: 700,
-                                    color: "#0A1733",
-                                    letterSpacing: -0.3,
-                                }}
-                            >
-                                에스엔씨
-                            </span>
-                        )}
-                    </div>
-
-                    {/* 데스크탑 GNB */}
-                    {!isMobile && (
-                        <ul
-                            style={{
-                                display: "flex",
-                                gap: 36,
-                                listStyle: "none",
-                                margin: 0,
-                                padding: 0,
-                            }}
-                        >
-                            <li><a href="#solutions" style={navLinkStyle}>Solutions</a></li>
-                            <li><a href="#network" style={navLinkStyle}>Network</a></li>
-                            <li><a href="#customers" style={navLinkStyle}>Customers</a></li>
-                            <li><a href="#about" style={navLinkStyle}>About</a></li>
-                        </ul>
-                    )}
-
-                    {/* 우측 버튼 */}
-                    {isMobile ? (
-                        <button
-                            onClick={() => setIsMenuOpen(true)}
-                            aria-label="메뉴 열기"
-                            style={{
-                                width: 44,
-                                height: 44,
-                                background: "transparent",
-                                border: "none",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                padding: 0,
-                            }}
-                        >
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                                <line x1="3" y1="7" x2="21" y2="7" stroke="#0A1733" strokeWidth="2" strokeLinecap="round" />
-                                <line x1="3" y1="12" x2="21" y2="12" stroke="#0A1733" strokeWidth="2" strokeLinecap="round" />
-                                <line x1="3" y1="17" x2="21" y2="17" stroke="#0A1733" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                        </button>
-                    ) : (
-                        <button
-                            style={{
-                                background: "#0066FF",
-                                color: "#FFFFFF",
-                                padding: "13px 28px",
-                                borderRadius: 8,
-                                fontSize: 14,
-                                border: "none",
-                                fontWeight: 500,
-                                fontFamily: "inherit",
-                                cursor: "pointer",
-                            }}
-                        >
-                            상담 신청
-                        </button>
-                    )}
-                </nav>
+                <MainHeader isMobile={isMobile} onMenuOpen={() => setIsMenuOpen(true)} />
 
                 {/* ────────── HERO ────────── */}
                 <section
@@ -202,8 +98,8 @@ export default function Home() {
                                 marginBottom: isMobile ? 16 : 24,
                             }}
                         >
-                            기업 IT,<br />
-                            <span style={{ color: "#0066FF" }}>SNC가 책임집니다</span>
+                            구매 이후까지<br />
+                            <span style={{ color: "#0066FF" }}>책임집니다</span>
                         </h1>
 
                         <p
@@ -215,10 +111,9 @@ export default function Home() {
                                 maxWidth: 480,
                             }}
                         >
-                            컴퓨터 수리부터 기업 IT 유지보수까지.
-                            전국 106개 NODE 네트워크로 어디서든 빠르게 달려갑니다.
+                            전국망 서비스와 2년 무상 AS를 기반으로,
+                            고객의 업무와 일상을 책임지는 대한민국 대표 PC 브랜드.
                         </p>
-
                         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                             <a
                                 href="/enterprise"
