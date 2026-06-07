@@ -2,7 +2,6 @@
 
 import SNCRotatingCube from "@/components/SNCRotatingCube"
 import TrustBar from "@/components/TrustBar"
-import PersonaRouter from "@/components/PersonaRouter"
 import BusinessPillars from "@/components/BusinessPillars"
 import EnterprisePreview from "@/components/EnterprisePreview"
 import PartnerPreview from "@/components/PartnerPreview"
@@ -210,7 +209,6 @@ export default function Home() {
                 <SNCCare isMobile={isMobile} />
                 <div id="solutions">
                     <TrustBar />
-                    <PersonaRouter />
                     <BusinessPillars />
                     <EnterprisePreview />
                     <PartnerPreview />

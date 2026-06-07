@@ -66,24 +66,43 @@ export default function FinalCTAFooter() {
                         25년의 손, 이제 당신께 내밉니다.
                     </p>
 
-                    <div style={{ display: "flex", gap: m ? 10 : 14, justifyContent: "center", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: m ? 8 : 12, justifyContent: "center", flexWrap: "wrap" }}>
                         <a
-                            href="#"
+                            href="/#brand-pc"
                             style={{
                                 background: "#FFFFFF",
                                 color: "#0A1733",
-                                padding: m ? "14px 24px" : "18px 36px",
+                                padding: m ? "12px 18px" : "16px 28px",
                                 borderRadius: 12,
-                                fontSize: m ? 14 : 16,
+                                fontSize: m ? 13 : 15,
                                 fontWeight: 500,
                                 textDecoration: "none",
                                 display: "inline-flex",
                                 alignItems: "center",
-                                gap: 8,
+                                gap: 6,
                                 boxShadow: "0 12px 32px rgba(0, 0, 0, 0.25)",
                             }}
                         >
-                            무료 상담 신청
+                            브랜드 PC 보기
+                            <span style={{ fontFamily: "'Inter', sans-serif" }}>→</span>
+                        </a>
+                        <a
+                            href="/#network"
+                            style={{
+                                background: "rgba(255, 255, 255, 0.08)",
+                                color: "#FFFFFF",
+                                padding: m ? "12px 18px" : "16px 28px",
+                                borderRadius: 12,
+                                fontSize: m ? 13 : 15,
+                                fontWeight: 500,
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 6,
+                                border: "1px solid rgba(255, 255, 255, 0.25)",
+                            }}
+                        >
+                            공식 NODE 찾기
                             <span style={{ fontFamily: "'Inter', sans-serif" }}>→</span>
                         </a>
                         <a
@@ -91,19 +110,39 @@ export default function FinalCTAFooter() {
                             style={{
                                 background: "transparent",
                                 color: "#FFFFFF",
-                                padding: m ? "14px 24px" : "18px 36px",
+                                padding: m ? "12px 18px" : "16px 28px",
                                 borderRadius: 12,
-                                fontSize: m ? 14 : 16,
+                                fontSize: m ? 13 : 15,
                                 fontWeight: 500,
                                 textDecoration: "none",
                                 display: "inline-flex",
                                 alignItems: "center",
-                                gap: 8,
+                                gap: 6,
                                 border: "1px solid rgba(255, 255, 255, 0.25)",
                             }}
                         >
                             <PhoneIcon />
+                           
                             1566-8099
+                        </a>
+                        <a
+                            href="mailto:help@i-snc.co.kr"
+                            style={{
+                                background: "transparent",
+                                color: "#FFFFFF",
+                                padding: m ? "12px 18px" : "16px 28px",
+                                borderRadius: 12,
+                                fontSize: m ? 13 : 15,
+                                fontWeight: 500,
+                                textDecoration: "none",
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 6,
+                                border: "1px solid rgba(255, 255, 255, 0.25)",
+                            }}
+                        >
+                            <MailIcon />
+                            메일 문의
                         </a>
                     </div>
                 </div>
@@ -320,6 +359,14 @@ function PhoneIcon() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
             />
+        </svg>
+    )
+}
+function MailIcon() {
+    return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
         </svg>
     )
 }
