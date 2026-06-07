@@ -14,6 +14,7 @@ import FinalCTAFooter from "@/components/FinalCTAFooter"
 import MobileMenu from "@/components/MobileMenu"
 import StickyBottomCTA from "@/components/StickyBottomCTA"
 import BrandPC from "@/components/BrandPC"
+import SNCCare from "@/components/SNCCare"
 import * as React from "react"
 
 export default function Home() {
@@ -311,6 +312,7 @@ export default function Home() {
 
                 {/* ────────── 나머지 섹션들 ────────── */}
                 <BrandPC isMobile={isMobile} />
+                <SNCCare isMobile={isMobile} />
                 <div id="solutions">
                     <TrustBar />
                     <PersonaRouter />
