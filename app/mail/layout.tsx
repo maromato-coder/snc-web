@@ -10,7 +10,7 @@ export default async function StaffMailLayout({ children }: { children: React.Re
     } = await supabase.auth.getUser()
 
     if (!user?.email || !isAdminEmail(user.email)) {
-        redirect("/admin/login?redirect=/mail")
+        redirect("/mail/welcome?reason=session")
     }
 
     return (

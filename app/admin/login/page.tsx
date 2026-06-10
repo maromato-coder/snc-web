@@ -7,14 +7,27 @@ export default function AdminLogin() {
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState<string | null>(null)
 
-    // URL 파라미터에서 에러 메시지 읽기 (미들웨어/콜백에서 전달)
+    const [nextPath, setNextPath] = React.useState("/admin")
+
+    // URL 파라미터에서 에러·리다이렉트 읽기
     React.useEffect(() => {
         const params = new URLSearchParams(window.location.search)
         const err = params.get("error")
+        const msg = params.get("msg")
+        const redirect = params.get("redirect")
+        const safeRedirect = redirect && redirect.startsWith("/") ? redirect : "/admin"
+        setNextPath(safeRedirect)
+
         if (err === "unauthorized_domain") {
             setError("@sncpc.com 계정만 접근 가능합니다. 다른 계정으로 시도하지 마세요.")
         } else if (err === "callback_failed") {
             setError("로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.")
+        } else if (err === "sso_failed") {
+            setError(msg || "SSO 연결에 실패했습니다. 업무앱에서 「새 창으로 열기」를 다시 시도하세요.")
+        } else if (err === "token_expired") {
+            setError("로그인 링크가 만료되었습니다. 업무앱 사내메일 버튼을 다시 눌러주세요.")
+        } else if (err === "missing_token") {
+            setError("직원 메일함은 업무앱 SSO로 열어주세요. 이 화면은 관리자용 Google 로그인입니다.")
         }
     }, [])
 
@@ -26,7 +39,7 @@ export default function AdminLogin() {
         const { error: signInError } = await supabase.auth.signInWithOAuth({
             provider: "google",
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=/admin`,
+                redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
                 queryParams: {
                     access_type: "offline",
                     prompt: "consent",
