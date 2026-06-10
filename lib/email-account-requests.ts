@@ -1,6 +1,7 @@
 // 업무앱·공개 API 공통 — @sncpc 이메일 계정 신청 DB 처리
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { getResendClient } from "@/lib/resend-client"
+import { saveStaffMailboxAuth } from "@/lib/staff-mailbox-auth"
 
 export type EmailRequestRow = {
     id: string
@@ -219,6 +220,12 @@ export async function patchEmailAccountRequest(
             .then(({ error }) => {
                 if (error) console.error("[email-account-requests] sender_accounts", error)
             })
+
+        if (input.temp_password) {
+            await saveStaffMailboxAuth(data.requested_email, input.temp_password, input.reviewer_email || undefined).catch(
+                (e) => console.error("[email-account-requests] staff_mailbox_credentials", e)
+            )
+        }
     }
 
     const resendAfter = getResendClient()

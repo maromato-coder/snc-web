@@ -75,7 +75,8 @@ export function issueSsoToken(body: {
             { status: 403 }
         )
     }
-    if (!isAsCenterSsoRole(body.role) && !isAdminEmail(email)) {
+    const staffMailbox = String(body.redirect || "").startsWith("/mail")
+    if (!staffMailbox && !isAsCenterSsoRole(body.role) && !isAdminEmail(email)) {
         throw Object.assign(new Error("업무앱에서 운영콘솔 SSO는 관리자·매니저 역할만 가능합니다."), {
             status: 403,
         })
@@ -119,8 +120,12 @@ export function verifySsoToken(token: string): SsoTokenPayload {
             status: 401,
         })
     }
-    if (!isAdminEmail(payload.email)) {
+    const staffMailbox = String(payload.redirect || "").startsWith("/mail")
+    if (!staffMailbox && !isAdminEmail(payload.email)) {
         throw Object.assign(new Error("관리자 이메일이 아닙니다."), { status: 403 })
+    }
+    if (staffMailbox && !payload.email.endsWith("@sncpc.com")) {
+        throw Object.assign(new Error("사내메일(@sncpc.com) 계정만 메일함 SSO가 가능합니다."), { status: 403 })
     }
     return payload
 }
